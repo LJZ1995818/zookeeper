@@ -24,7 +24,7 @@ import java.io.IOException;
 
 /**
  * Interface that is implemented by generated classes.
- * 
+ * 构造类必须实现的接口
  */
 @InterfaceAudience.Public
 public interface Record {
