@@ -19,7 +19,7 @@
 package org.apache.jute.compiler;
 
 /**
- *
+ * JLong基本类型
  */
 public class JLong extends JType {
     

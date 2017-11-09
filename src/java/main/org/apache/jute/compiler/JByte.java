@@ -19,7 +19,7 @@
 package org.apache.jute.compiler;
 
 /**
- *
+ * jbyte
  */
 public class JByte extends JType {
     

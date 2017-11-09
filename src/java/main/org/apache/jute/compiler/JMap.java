@@ -19,7 +19,7 @@
 package org.apache.jute.compiler;
 
 /**
- *
+ * JMap 键值对 
  */
 public class JMap extends JCompType {
    

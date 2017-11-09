@@ -24,7 +24,7 @@ package org.apache.jute.compiler;
  */
 abstract class JCompType extends JType {
     
-    /** Creates a new instance of JCompType */
+    /** Creates a new instance of JCompType 用于产生hashcode equals CompareTo方法*/
     JCompType(String cType, String cppType, String csharpType, String javaType, String suffix, String wrapper, String csharpWrapper) {
         super(cType, cppType, csharpType, javaType, suffix, wrapper, csharpWrapper, null);
     }

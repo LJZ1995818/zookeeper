@@ -19,7 +19,7 @@
 package org.apache.jute.compiler;
 
 /**
- *
+ * JFloat 基本类型
  */
 public class JFloat extends JType {
     

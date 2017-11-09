@@ -22,6 +22,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * CSharp Code generator front-end for Hadoop record I/O. 
+ */
 public class CSharpGenerator {
     private List<JRecord> mRecList;
     private final File outputDirectory;

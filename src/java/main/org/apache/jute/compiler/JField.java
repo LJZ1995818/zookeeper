@@ -19,7 +19,7 @@
 package org.apache.jute.compiler;
 
 /**
- *
+ * JField 字段处理
  */
 public class JField {
     private JType mType;

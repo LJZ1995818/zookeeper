@@ -19,7 +19,7 @@
 package org.apache.jute.compiler;
 
 /**
- *
+ * JInt 类型不进比较
  */
 public class JInt extends JType {
     

@@ -19,7 +19,7 @@
 package org.apache.jute.compiler;
 
 /**
- *
+ * JBoolean 基本类型
  */
 public class JBoolean extends JType {
     

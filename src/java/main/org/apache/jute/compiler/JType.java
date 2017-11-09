@@ -20,7 +20,7 @@ package org.apache.jute.compiler;
 
 /**
  * Abstract Base class for all types supported by Hadoop Record I/O.
- * 
+ * 为所有类型都支持的抽象类
  */
 abstract public class JType {
     
@@ -34,7 +34,7 @@ abstract public class JType {
     private String mUnwrapMethod;
 
     /**
-     * Creates a new instance of JType
+     * Creates a new instance of JType 包含了对不同语言的处理
      */
     JType(String cname, String cppname, String csharpName, String javaname, String suffix, String wrapper, String csharpWrapper, String unwrap) {
     	mCName = cname;
@@ -49,6 +49,7 @@ abstract public class JType {
     
     abstract String getSignature();
     
+    // <editor-fold desc="对各种语言进行类型的构成处理">
     String genCppDecl(String fname) {
         return "  "+mCppName+" m"+fname+";\n"; 
     }
@@ -84,6 +85,9 @@ abstract public class JType {
         return getFunc;
     }
     
+    /**
+     * 将字段的首字母变成大写
+     */
     static String capitalize(String s) {
         return s.substring(0,1).toUpperCase()+s.substring(1);
     }
@@ -120,6 +124,9 @@ abstract public class JType {
         return mSharpWrapper;
     }
     
+    /**
+     * 获取方法后缀 用于序列化和反序列化方法
+     */
     String getMethodSuffix() {
         return mMethodSuffix;
     }
@@ -201,4 +208,5 @@ abstract public class JType {
     public String genCsharpConstructorParam(String fname) {
         return "  "+mCsharpName+" " +fname+"\n";
     }
+    // </editor-fold>
 }

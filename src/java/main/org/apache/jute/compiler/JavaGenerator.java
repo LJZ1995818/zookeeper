@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Java Code generator front-end for Hadoop record I/O.
+ * Java Code generator front-end for Hadoop record I/O. 
  */
 class JavaGenerator {
     private List<JRecord> mRecList;

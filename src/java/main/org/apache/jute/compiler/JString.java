@@ -23,7 +23,7 @@ package org.apache.jute.compiler;
  */
 public class JString extends JCompType {
     
-    /** Creates a new instance of JString */
+    /** Creates a new instance of JString jute定义的字符串编译格式 */
     public JString() {
         super("char *", " ::std::string", "string", "String", "String", "String", "string");
     }

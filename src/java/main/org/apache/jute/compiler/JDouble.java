@@ -19,7 +19,7 @@
 package org.apache.jute.compiler;
 
 /**
- *
+ *  
  */
 public class JDouble extends JType {
     
