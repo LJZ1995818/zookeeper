@@ -30,33 +30,32 @@ import java.util.HashMap;
  *
  */
 public class RecordReader {
-    
+
     private InputArchive archive;
 
     static private HashMap<String, Method> archiveFactory;
-    
+
+    /**
+     * 利用工厂模式产生三种InputArchive，二进制、csv、xml
+     */
     static {
         archiveFactory = new HashMap<String, Method>();
 
         try {
             archiveFactory.put("binary",
-                    BinaryInputArchive.class.getDeclaredMethod(
-                        "getArchive", new Class[]{ InputStream.class } ));
+                    BinaryInputArchive.class.getDeclaredMethod("getArchive", new Class[] { InputStream.class }));
             archiveFactory.put("csv",
-                    CsvInputArchive.class.getDeclaredMethod(
-                        "getArchive", new Class[]{ InputStream.class }));
+                    CsvInputArchive.class.getDeclaredMethod("getArchive", new Class[] { InputStream.class }));
             archiveFactory.put("xml",
-                    XmlInputArchive.class.getDeclaredMethod(
-                        "getArchive", new Class[]{ InputStream.class }));
+                    XmlInputArchive.class.getDeclaredMethod("getArchive", new Class[] { InputStream.class }));
         } catch (SecurityException ex) {
             ex.printStackTrace();
         } catch (NoSuchMethodException ex) {
             ex.printStackTrace();
         }
     }
-    
-    static private InputArchive createArchive(InputStream in, String format)
-    throws IOException {
+
+    static private InputArchive createArchive(InputStream in, String format) throws IOException {
         Method factory = (Method) archiveFactory.get(format);
         if (factory != null) {
             Object[] params = { in };
@@ -72,16 +71,16 @@ public class RecordReader {
         }
         return null;
     }
+
     /**
      * Creates a new instance of RecordReader.
      * @param in Stream from which to deserialize a record
      * @param format Deserialization format ("binary", "xml", or "csv")
      */
-    public RecordReader(InputStream in, String format)
-    throws IOException {
+    public RecordReader(InputStream in, String format) throws IOException {
         archive = createArchive(in, format);
     }
-    
+
     /**
      * Deserialize a record
      * @param r Record to be deserialized
@@ -89,5 +88,5 @@ public class RecordReader {
     public void read(Record r) throws IOException {
         r.deserialize(archive, "");
     }
-    
+
 }

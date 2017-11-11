@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- *
+ * 利用DataInputh实现对二进制数据流的读取
  */
 public class BinaryInputArchive implements InputArchive {
     static public final String UNREASONBLE_LENGTH= "Unreasonable length = ";

@@ -47,6 +47,7 @@ class JavaGenerator {
     /**
      * Generate Java code for records. This method is only a front-end to
      * JRecord, since one file is generated for each record.
+     * 为records构造java代码，每个记录都生成一个文件
      */
     void genCode() throws IOException {
         for (Iterator<JRecord> i = mRecList.iterator(); i.hasNext(); ) {

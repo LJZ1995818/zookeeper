@@ -24,7 +24,7 @@ import java.util.TreeMap;
 
 /**
  * Interface that alll the serializers have to implement.
- *
+ * 所有序列化都必须实现的接口
  */
 public interface OutputArchive {
     public void writeByte(byte b, String tag) throws IOException;

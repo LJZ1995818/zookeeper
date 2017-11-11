@@ -30,7 +30,7 @@ package org.apache.jute;
  *   idx.incr();
  * }
  * </code>
- *
+ * 对读取vectors或者maps，使用的索引
  */
 public interface Index {
     public boolean done();

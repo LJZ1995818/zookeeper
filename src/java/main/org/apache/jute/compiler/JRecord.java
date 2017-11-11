@@ -32,9 +32,15 @@ import java.util.Map;
  */
 public class JRecord extends JCompType {
 
+    /**
+     * 类全称 包含包名称 和 类名
+     */
     private String mFQName;
     private String mName;
     private String mModule;
+    /**
+     * 这个类的所有字段
+     */
     private List<JField> mFields;
 
     /**
@@ -747,6 +753,9 @@ public class JRecord extends JCompType {
         }
     }
 
+    /**
+     * 获取c#格式 将java包名称转换为c#的命名空间，每个名称的首字母都变为大写
+     */
     public static String getCsharpFQName(String name) {
         String[] packages = name.split("\\.");
         StringBuffer fQName = new StringBuffer();

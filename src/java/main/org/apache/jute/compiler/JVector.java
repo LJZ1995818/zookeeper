@@ -19,7 +19,7 @@
 package org.apache.jute.compiler;
 
 /**
- *
+ * JVector 实现对 泛型的支持
  */
 public class JVector extends JCompType {
     
