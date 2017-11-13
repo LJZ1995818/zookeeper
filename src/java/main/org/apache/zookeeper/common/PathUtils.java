@@ -21,6 +21,7 @@ package org.apache.zookeeper.common;
 
 /**
  * Path related utilities
+ * 与路径相关的实用程序
  */    
 public class PathUtils {
 	
@@ -37,6 +38,7 @@ public class PathUtils {
 	
     /**
      * Validate the provided znode path string
+     * 验证提供的znode节点是否正确
      * @param path znode path string
      * @throws IllegalArgumentException if the path is invalid
      */

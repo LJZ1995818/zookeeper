@@ -27,7 +27,8 @@ import org.slf4j.Logger;
 
 /**
  * Provide insight into the runtime environment.
- *
+ * 提供一些运行时必要的属性，java和系统属性
+ * 
  */
 public class Environment {
     public static final String JAAS_CONF_KEY = "java.security.auth.login.config";

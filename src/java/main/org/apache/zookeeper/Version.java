@@ -18,6 +18,9 @@
 
 package org.apache.zookeeper;
 
+/**
+ * 获取zookeeper的版本信息 （大版本、小版本以及biuld时间）
+ */
 public class Version implements org.apache.zookeeper.version.Info {
 
     /*

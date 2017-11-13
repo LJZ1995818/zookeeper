@@ -18,10 +18,12 @@
 package org.apache.zookeeper;
 
 
+import org.apache.commons.collections.FastArrayList;
 import org.apache.zookeeper.data.Stat;
 
 /**
  * Encodes the result of a single part of a multiple operation commit.
+ * 对多个操作提交的单个部分的结果进行编码
  */
 public abstract class OpResult {
     private int type;

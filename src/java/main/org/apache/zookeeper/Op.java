@@ -34,9 +34,12 @@ import java.util.List;
 /**
  * Represents a single operation in a multi-operation transaction.  Each operation can be a create, update
  * or delete or can just be a version check.
- *
+ *表示多事务中的单个操作。 每个操作可以是创建、更新或删除, 也可以只是版本检查。
+ * 
+ * 
  * Sub-classes of Op each represent each detailed type but should not normally be referenced except via
  * the provided factory methods.
+ * Op 的子类分别表示每个详细类型, 但通常不应引用, 除非通过提供的工厂方法。
  *
  * @see ZooKeeper#create(String, byte[], java.util.List, CreateMode)
  * @see ZooKeeper#create(String, byte[], java.util.List, CreateMode, org.apache.zookeeper.AsyncCallback.StringCallback, Object)
@@ -48,6 +51,11 @@ public abstract class Op {
     private String path;
 
     // prevent untyped construction
+    /**
+     * 防止非类型化构造
+     * @param type 操作类型的标识符
+     * @param path znode节点路径
+     */
     private Op(int type, String path) {
         this.type = type;
         this.path = path;
@@ -204,12 +212,14 @@ public abstract class Op {
 
     /**
      * Encodes an op for wire transmission.
+     * 为传输编码 op。
      * @return An appropriate Record structure.
      */
     public abstract Record toRequestRecord() ;
     
     /**
      * Reconstructs the transaction with the chroot prefix.
+     * 用 chroot 前缀重建事务。
      * @return transaction with chroot.
      */
     abstract Op withChroot(String addRootPrefix);

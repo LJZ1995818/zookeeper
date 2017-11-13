@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 通过错误码构建zookeeper的自定义异常
+ */
 @SuppressWarnings("serial")
 @InterfaceAudience.Public
 public abstract class KeeperException extends Exception {
@@ -173,6 +176,8 @@ public abstract class KeeperException extends Exception {
      * didn't want to have constants declared twice. This
      * interface should be private, but it's declared public to enable
      * javadoc to include in the user API spec.
+     * 
+     * 过时的错误代码 使用int变量区分响应码
      */
     @Deprecated
     @InterfaceAudience.Public
@@ -320,6 +325,7 @@ public abstract class KeeperException extends Exception {
      * types. This enum replaces the deprecated earlier static final int
      * constants. The old, deprecated, values are in "camel case" while the new
      * enum values are in all CAPS.
+     * 新版本的响应吗 使用枚举区分
      */
     @InterfaceAudience.Public
     public static enum Code implements CodeDeprecated {

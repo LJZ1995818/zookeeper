@@ -20,6 +20,7 @@ package org.apache.zookeeper;
 
 /**
  * a class that represents the stats associated with quotas
+ * 一个表示与配额相关的统计信息的类
  */
 public class StatsTrack {
     private int count;

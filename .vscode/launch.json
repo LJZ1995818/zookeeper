@@ -1,0 +1,204 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ServerAdminClient<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.ServerAdminClient",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Version<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.Version",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ZooKeeperMain<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.ZooKeeperMain",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-FourLetterWordMain<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.client.FourLetterWordMain",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-LogFormatter<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.server.LogFormatter",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PurgeTxnLog<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.server.PurgeTxnLog",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-SnapshotFormatter<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.server.SnapshotFormatter",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-TraceFormatter<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.server.TraceFormatter",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ZooKeeperServerMain<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.server.ZooKeeperServerMain",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-DigestAuthenticationProvider<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.server.auth.DigestAuthenticationProvider",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-KerberosName<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.server.auth.KerberosName",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-QuorumPeerMain<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.server.quorum.QuorumPeerMain",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-VerGen<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.version.util.VerGen",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-TimeTest<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.common.TimeTest",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-IntegrityCheck<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.test.IntegrityCheck",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-SledgeHammer<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.test.SledgeHammer",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-TestHammer<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.test.TestHammer",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ZooKeeperTestClient<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.test.ZooKeeperTestClient",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-BaseSysTest<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.test.system.BaseSysTest",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-GenerateLoad<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.test.system.GenerateLoad",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-InstanceContainer<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.apache.zookeeper.test.system.InstanceContainer",
+            "projectName": "ZooKeeper",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Attach)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 0
+        }
+    ]
+}

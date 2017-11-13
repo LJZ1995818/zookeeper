@@ -29,12 +29,14 @@ import org.apache.zookeeper.data.Stat;
  * Asynchronous calls usually improve system efficiency on IO-related APIs.
  * <p/>
  * ZooKeeper provides asynchronous version as equivalent to synchronous APIs.
+ * 此接口定义了一些用于处理的异步接口，用来提高IO的性能，同时异步接口和同步接口是相同的
  */
 @InterfaceAudience.Public
 public interface AsyncCallback {
 
     /**
      * This callback is used to retrieve the stat of the node.
+     * 此接口回调用于获取节点状态
      */
     @InterfaceAudience.Public
     interface StatCallback extends AsyncCallback {
@@ -70,6 +72,7 @@ public interface AsyncCallback {
 
     /**
      * This callback is used to retrieve the data and stat of the node.
+     * 此接口回调用于获取节点状态和数据
      */
     @InterfaceAudience.Public
     interface DataCallback extends AsyncCallback {
@@ -103,6 +106,7 @@ public interface AsyncCallback {
 
     /**
      * This callback is used to retrieve the ACL and stat of the node.
+     * 此接口回调用于获取节点ACL和状态
      */
     @InterfaceAudience.Public
     interface ACLCallback extends AsyncCallback {
@@ -136,6 +140,7 @@ public interface AsyncCallback {
 
     /**
      * This callback is used to retrieve the children of the node.
+     * 此接口回调用于获取节点的子节点
      */
     @InterfaceAudience.Public
     interface ChildrenCallback extends AsyncCallback {
@@ -167,6 +172,7 @@ public interface AsyncCallback {
 
     /**
      * This callback is used to retrieve the children and stat of the node.
+     * 此接口回调用于获取子节点和状态
      */
     @InterfaceAudience.Public
     interface Children2Callback extends AsyncCallback {
@@ -189,6 +195,7 @@ public interface AsyncCallback {
 
     /**
      * This callback is used to retrieve the name and stat of the node.
+     * 此接口回调用于获取节点名称和状态
      */
     @InterfaceAudience.Public
     interface Create2Callback extends AsyncCallback {
@@ -212,6 +219,7 @@ public interface AsyncCallback {
 
     /**
      * This callback is used to retrieve the name of the node.
+     * 此接口回调用于获取节点名称
      */
     @InterfaceAudience.Public
     interface StringCallback extends AsyncCallback {

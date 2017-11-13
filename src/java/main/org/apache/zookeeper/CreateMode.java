@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 /***
  *  CreateMode value determines how the znode is created on ZooKeeper.
+ *  在zookeeper节点中如何被创建的模式 新增了CONTAINER和基于TTL的属性
  */
 @InterfaceAudience.Public
 public enum CreateMode {
@@ -53,6 +54,13 @@ public enum CreateMode {
      * Given this property, you should be prepared to get
      * {@link org.apache.zookeeper.KeeperException.NoNodeException}
      * when creating children inside of this container node.
+     *
+     * znode 将是一个容器节点。容器
+     *节点是特殊的目的节点有用的食谱, 如领导者, 锁,
+     *等当容器的最后一个子级被删除时, 容器将变为
+     *将来某个时候被服务器删除的候选项。
+     *考虑到这个属性, 你应该准备好
+     *在该容器节点的内部创建子级时。
      */
     CONTAINER (4, false, false, true, false),
     /**
@@ -86,7 +94,7 @@ public enum CreateMode {
         this.isTTL = isTTL;
     }
 
-    public boolean isEphemeral() { 
+    public boolean isEphemeral() {
         return ephemeral;
     }
 

@@ -27,9 +27,14 @@ import org.apache.zookeeper.data.Id;
 
 @InterfaceAudience.Public
 public class ZooDefs {
-   
+   /**
+    * 配置节点
+    */
    final public static String CONFIG_NODE = "/zookeeper/config";
 
+   /**
+    * op定义的操作符
+    */
    @InterfaceAudience.Public
     public interface OpCode {
         public final int notification = 0;
@@ -87,6 +92,9 @@ public class ZooDefs {
         public final int error = -1;
     }
 
+    /**
+     * 对节点的权限标识
+     */
     @InterfaceAudience.Public
     public interface Perms {
         int READ = 1 << 0;
@@ -102,6 +110,9 @@ public class ZooDefs {
         int ALL = READ | WRITE | CREATE | DELETE | ADMIN;
     }
 
+    /**
+     * 对znode节点的权限  包括两部分 权限种类 权限范围
+     */
     @InterfaceAudience.Public
     public interface Ids {
         /**
