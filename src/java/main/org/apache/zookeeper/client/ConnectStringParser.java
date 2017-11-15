@@ -28,9 +28,9 @@ import static org.apache.zookeeper.common.StringUtils.split;
 
 /**
  * A parser for ZooKeeper Client connect strings.
- * 
+ * 用于客户端连接字符串的分析器。
  * This class is not meant to be seen or used outside of ZooKeeper itself.
- * 
+ * 这个类并不意味着ZooKeeper在外部看到或使用。
  * The chrootPath member should be replaced by a Path object in issue
  * ZOOKEEPER-849.
  * 

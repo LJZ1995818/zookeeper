@@ -33,11 +33,13 @@ public interface Watcher {
 
     /**
      * This interface defines the possible states an Event may represent
+     * 此接口定义事件可能表示的状态
      */
     @InterfaceAudience.Public
     public interface Event {
         /**
          * Enumeration of states the ZooKeeper may be at the event
+         * 列举ZooKeeper可能在事件
          */
         @InterfaceAudience.Public
         public enum KeeperState {
@@ -116,6 +118,7 @@ public interface Watcher {
 
         /**
          * Enumeration of types of events that may occur on the ZooKeeper
+         * ZooKeeper可能发生的事件类型的枚举
          */
         @InterfaceAudience.Public
         public enum EventType {
@@ -189,5 +192,8 @@ public interface Watcher {
         }
     }
 
+    /**
+     * 处理监听事件
+     */
     abstract public void process(WatchedEvent event);
 }

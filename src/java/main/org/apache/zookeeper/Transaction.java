@@ -27,6 +27,7 @@ import java.util.List;
  * Provides a builder style interface for doing multiple updates.  This is
  * really just a thin layer on top of Zookeeper.multi().
  *
+ *  提供了一个用于执行多个操作更新操作的事务
  * @since 3.4.0
  *
  */

@@ -30,7 +30,7 @@ public class BinaryInputArchive implements InputArchive {
     static public final String UNREASONBLE_LENGTH= "Unreasonable length = ";
     private DataInput in;
     
-    static public BinaryInputArchive 0(InputStream strm) {
+    static public BinaryInputArchive getArchive(InputStream strm) {
         return new BinaryInputArchive(new DataInputStream(strm));
     }
     

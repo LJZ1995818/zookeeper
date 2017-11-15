@@ -28,6 +28,7 @@ import org.apache.zookeeper.ZooKeeper.ZKWatchManager;
 /**
  * Handles the special case of removing watches which has registered for a
  * client path
+ * 处理为客户端路径注册的表的删除特殊情况
  */
 public class WatchDeregistration {
 
@@ -52,6 +53,7 @@ public class WatchDeregistration {
      * @param rc
      *            the result code of the operation that attempted to remove
      *            watch on the path.
+     *          试图删除路径上的监视的操作的结果代码。
      */
     public Map<EventType, Set<Watcher>> unregister(int rc)
             throws KeeperException {
