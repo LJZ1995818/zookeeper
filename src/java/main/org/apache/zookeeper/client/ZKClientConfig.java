@@ -27,6 +27,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 
 /**
  * Handles client specific properties
+ * 记录客户端的具体属性
  * @since 3.5.2
  */
 @InterfaceAudience.Public

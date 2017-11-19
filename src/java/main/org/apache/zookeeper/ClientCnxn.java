@@ -279,6 +279,7 @@ public class ClientCnxn {
             this.watchRegistration = watchRegistration;
         }
 
+        
         public void createBB() {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -64,6 +64,9 @@ import static org.apache.zookeeper.common.X509Exception.SSLContextException;
  * ClientCnxnSocketNetty implements ClientCnxnSocket abstract methods.
  * It's responsible for connecting to server, reading/writing network traffic and
  * being a layer between network data and higher level packets.
+ * ClientCnxnSocketNetty实现ClientCnxnSocket抽象方法。
+ * 它负责连接到服务器，读/写网络流量和
+ * 是网络数据和更高级别数据包之间的一个层。
  */
 public class ClientCnxnSocketNetty extends ClientCnxnSocket {
     private static final Logger LOG = LoggerFactory.getLogger(ClientCnxnSocketNetty.class);

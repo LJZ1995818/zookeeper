@@ -25,25 +25,32 @@ import java.nio.ByteBuffer;
 import org.apache.jute.BinaryOutputArchive;
 import org.apache.jute.Record;
 
+/**
+ * 封装ByteBuffer的输出流，继承了OutputStream，用于对OutputArchive的使用
+ */
 public class ByteBufferOutputStream extends OutputStream {
     ByteBuffer bb;
+
     public ByteBufferOutputStream(ByteBuffer bb) {
         this.bb = bb;
     }
+
     @Override
     public void write(int b) throws IOException {
-        bb.put((byte)b);
+        bb.put((byte) b);
     }
+
     @Override
     public void write(byte[] b) throws IOException {
         bb.put(b);
     }
+
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
         bb.put(b, off, len);
     }
-    static public void record2ByteBuffer(Record record, ByteBuffer bb)
-    throws IOException {
+
+    static public void record2ByteBuffer(Record record, ByteBuffer bb) throws IOException {
         BinaryOutputArchive oa;
         oa = BinaryOutputArchive.getArchive(new ByteBufferOutputStream(bb));
         record.serialize(oa, "request");

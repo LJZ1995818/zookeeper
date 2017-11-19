@@ -39,6 +39,7 @@ import static org.apache.zookeeper.common.X509Exception.TrustManagerException;
 
 /**
  * Utility code for X509 handling
+ * x509：X.509是一种非常通用的证书格式。所有的证书都符合ITU-T X.509国际标准，因此(理论上)为一种应用创建的证书可以用于任何其他符合X.509标准的应用。
  */
 public class X509Util {
     private static final Logger LOG = LoggerFactory.getLogger(X509Util.class);

@@ -19,7 +19,9 @@
 package org.apache.zookeeper.common;
 
 import java.util.Date;
-
+/**
+ * zookeeper的时间处理器
+ */
 public class Time {
     /**
      * Returns time in milliseconds as does System.currentTimeMillis(),

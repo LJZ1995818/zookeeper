@@ -75,6 +75,9 @@ public class Version implements org.apache.zookeeper.version.Info {
      *            </ul>
      */
     public static void main(String[] args) {
+        System.out.println(System.getProperty(Environment.JAAS_CONF_KEY));
+        System.out.println(System.nanoTime());
+        System.out.println(System.currentTimeMillis());
         if (args.length > 1) {
             printUsage();
         }

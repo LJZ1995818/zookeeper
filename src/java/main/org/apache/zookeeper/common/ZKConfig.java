@@ -36,6 +36,9 @@ import org.slf4j.LoggerFactory;
  * This class is a base class for the configurations of both client and server.
  * It supports reading client configuration from both system properties and
  * configuration file. A user can override any system property by calling
+ * 这个类是客户端和服务器配置的基类。
+ * 它支持从系统属性和配置文件。
+ * 用户可以通过调用来覆盖任何系统属性
  * {@link #setProperty(String, String)}.
  * @since 3.5.2
  */

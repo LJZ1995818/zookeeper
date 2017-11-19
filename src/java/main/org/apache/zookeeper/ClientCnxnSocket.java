@@ -39,10 +39,10 @@ import org.slf4j.LoggerFactory;
 /**
  * A ClientCnxnSocket does the lower level communication with a socket
  * implementation.
- * 
+ * ClientCnxnSocket 与套接字实现进行较低级别的通信。
  * This code has been moved out of ClientCnxn so that a Netty implementation can
  * be provided as an alternative to the NIO socket code.
- * 
+ * 此代码已移出 ClientCnxn, 因此可以将Netty实现作为 NIO 套接字代码的替代方案提供。
  */
 abstract class ClientCnxnSocket {
     private static final Logger LOG = LoggerFactory.getLogger(ClientCnxnSocket.class);
@@ -75,8 +75,7 @@ abstract class ClientCnxnSocket {
      */
     protected long sessionId;
 
-    void introduce(ClientCnxn.SendThread sendThread, long sessionId,
-                   LinkedBlockingDeque<Packet> outgoingQueue) {
+    void introduce(ClientCnxn.SendThread sendThread, long sessionId, LinkedBlockingDeque<Packet> outgoingQueue) {
         this.sendThread = sendThread;
         this.sessionId = sessionId;
         this.outgoingQueue = outgoingQueue;
@@ -130,8 +129,7 @@ abstract class ClientCnxnSocket {
                 buf.append(Integer.toHexString(b) + ",");
             }
             buf.append("]");
-            LOG.trace("readConnectResult " + incomingBuffer.remaining() + " "
-                    + buf.toString());
+            LOG.trace("readConnectResult " + incomingBuffer.remaining() + " " + buf.toString());
         }
         ByteBufferInputStream bbis = new ByteBufferInputStream(incomingBuffer);
         BinaryInputArchive bbia = BinaryInputArchive.getArchive(bbis);
@@ -149,8 +147,7 @@ abstract class ClientCnxnSocket {
         }
 
         this.sessionId = conRsp.getSessionId();
-        sendThread.onConnected(conRsp.getTimeOut(), this.sessionId,
-                conRsp.getPasswd(), isRO);
+        sendThread.onConnected(conRsp.getTimeOut(), this.sessionId, conRsp.getPasswd(), isRO);
     }
 
     abstract boolean isConnected();
@@ -199,7 +196,9 @@ abstract class ClientCnxnSocket {
      * - read packets into incomingBuffer.
      * - write outgoing queue packets.
      * - update relevant timestamp.
-     *
+     * -将数据包读入 incomingBuffer。
+     * -写入传出队列数据包。
+     * -更新相关的时间戳。
      * @param waitTimeOut timeout in blocking wait. Unit in MilliSecond.
      * @param pendingQueue These are the packets that have been sent and
      *                     are waiting for a response.
@@ -207,8 +206,7 @@ abstract class ClientCnxnSocket {
      * @throws IOException
      * @throws InterruptedException
      */
-    abstract void doTransport(int waitTimeOut, List<Packet> pendingQueue,
-            ClientCnxn cnxn)
+    abstract void doTransport(int waitTimeOut, List<Packet> pendingQueue, ClientCnxn cnxn)
             throws IOException, InterruptedException;
 
     /**
@@ -231,15 +229,11 @@ abstract class ClientCnxnSocket {
 
     protected void initProperties() throws IOException {
         try {
-            packetLen = clientConfig.getInt(ZKConfig.JUTE_MAXBUFFER,
-                    ZKClientConfig.CLIENT_MAX_PACKET_LENGTH_DEFAULT);
-            LOG.info("{} value is {} Bytes", ZKConfig.JUTE_MAXBUFFER,
-                    packetLen);
+            packetLen = clientConfig.getInt(ZKConfig.JUTE_MAXBUFFER, ZKClientConfig.CLIENT_MAX_PACKET_LENGTH_DEFAULT);
+            LOG.info("{} value is {} Bytes", ZKConfig.JUTE_MAXBUFFER, packetLen);
         } catch (NumberFormatException e) {
-            String msg = MessageFormat.format(
-                    "Configured value {0} for property {1} can not be parsed to int",
-                    clientConfig.getProperty(ZKConfig.JUTE_MAXBUFFER),
-                    ZKConfig.JUTE_MAXBUFFER);
+            String msg = MessageFormat.format("Configured value {0} for property {1} can not be parsed to int",
+                    clientConfig.getProperty(ZKConfig.JUTE_MAXBUFFER), ZKConfig.JUTE_MAXBUFFER);
             LOG.error(msg);
             throw new IOException(msg);
         }
