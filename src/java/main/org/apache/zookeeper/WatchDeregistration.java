@@ -51,9 +51,9 @@ public class WatchDeregistration {
      * Unregistering watcher that was added on path.
      * 
      * @param rc
-     *            the result code of the operation that attempted to remove
-     *            watch on the path.
-     *          试图删除路径上的监视的操作的结果代码。
+     *   the result code of the operation that attempted to remove
+     *   atch on the path.
+     *   试图删除路径上的监视的操作的结果代码。
      */
     public Map<EventType, Set<Watcher>> unregister(int rc)
             throws KeeperException {

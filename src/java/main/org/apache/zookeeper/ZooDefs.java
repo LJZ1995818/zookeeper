@@ -57,6 +57,9 @@ public class ZooDefs {
 
         public final int sync = 9;
 
+        /**
+         * ping 服务器
+         */
         public final int ping = 11;
 
         public final int getChildren2 = 12;

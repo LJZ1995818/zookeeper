@@ -80,7 +80,7 @@ public class ClientCnxnSocketNIO extends ClientCnxnSocket {
                 if (incomingBuffer == lenBuffer) {
                     recvCount++;
                     readLength();
-                } else if (!initialized) {
+                } else if (!initialized) {// 初始化读取通道
                     readConnectResult();
                     enableRead();
                     if (findSendablePacket(outgoingQueue, sendThread.tunnelAuthInProgress()) != null) {
@@ -92,7 +92,7 @@ public class ClientCnxnSocketNIO extends ClientCnxnSocket {
                     incomingBuffer = lenBuffer;
                     updateLastHeard();
                     initialized = true;
-                } else {
+                } else {// 处理正常的package
                     sendThread.readResponse(incomingBuffer);
                     lenBuffer.clear();
                     incomingBuffer = lenBuffer;
@@ -100,7 +100,7 @@ public class ClientCnxnSocketNIO extends ClientCnxnSocket {
                 }
             }
         }
-        if (sockKey.isWritable()) {
+        if (sockKey.isWritable()) {// 如果sockKey，发送数据
             Packet p = findSendablePacket(outgoingQueue, sendThread.tunnelAuthInProgress());
 
             if (p != null) {
@@ -113,10 +113,10 @@ public class ClientCnxnSocketNIO extends ClientCnxnSocket {
                     }
                     p.createBB();
                 }
-                sock.write(p.bb);
+                sock.write(p.bb);// 发送请求数据
                 if (!p.bb.hasRemaining()) {
                     sentCount++;
-                    outgoingQueue.removeFirstOccurrence(p);
+                    outgoingQueue.removeFirstOccurrence(p);// 移除已发送的数据包，将待读取的数据包添加到pending
                     if (p.requestHeader != null && p.requestHeader.getType() != OpCode.ping
                             && p.requestHeader.getType() != OpCode.auth) {
                         synchronized (pendingQueue) {

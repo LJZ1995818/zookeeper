@@ -87,6 +87,7 @@ public class ClientCnxnSocketNetty extends ClientCnxnSocket {
     }
 
     /**
+     * 生命周期图
      * lifecycles diagram:
      * <p/>
      * loop:
@@ -215,7 +216,7 @@ public class ClientCnxnSocketNetty extends ClientCnxnSocket {
         if (needSasl.get()) {
             waitSasl.release();
         }
-        outgoingQueue.add(WakeupPacket.getInstance());
+        outgoingQueue.add(WakeupPacket.getInstance());// 向服务器发一个wakeup包
     }
 
     @Override
@@ -280,6 +281,7 @@ public class ClientCnxnSocketNetty extends ClientCnxnSocket {
 
     /**
      * doWrite handles writing the packets from outgoingQueue via network to server.
+     * doWrite 处理从 outgoingQueue 通过网络将数据包写入服务器。
      */
     private void doWrite(List<Packet> pendingQueue, Packet p, ClientCnxn cnxn) {
         updateNow();
@@ -346,6 +348,7 @@ public class ClientCnxnSocketNetty extends ClientCnxnSocket {
     /**
      * ZKClientPipelineFactory is the netty pipeline factory for this netty
      * connection implementation.
+     * ZKClientPipelineFactory 是此netty连接实现的netty管线工厂。
      */
     private class ZKClientPipelineFactory implements ChannelPipelineFactory {
         private SSLContext sslContext = null;
@@ -377,6 +380,7 @@ public class ClientCnxnSocketNetty extends ClientCnxnSocket {
     /**
      * ZKClientHandler is the netty handler that sits in netty upstream last
      * place. It mainly handles read traffic and helps synchronize connection state.
+     * ZKClientHandler 是位于网状上游的网状处理程序。它主要处理读取通信并帮助同步连接状态。
      */
     private class ZKClientHandler extends SimpleChannelUpstreamHandler {
         AtomicBoolean channelClosed = new AtomicBoolean(false);
@@ -397,7 +401,6 @@ public class ClientCnxnSocketNetty extends ClientCnxnSocket {
                 return;
             }
             disconnected.set(true);
-            onClosing();
         }
 
         @Override

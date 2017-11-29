@@ -29,6 +29,10 @@ public interface ClientWatchManager {
      * internal structure as if the watches had triggered. The intent being 
      * that the callee is now responsible for notifying the watchers of the 
      * event, possibly at some later time.
+     * 返回一组应通知事件的观察者。
+     * Manager不能通知观察者, 但是它会更新它的内部结构, 就好像手表已经触发了一样。
+     * 意图是被调用方现在负责通知事件的观察者, 可能在稍后的时间。
+     * 
      * 
      * @param state event state
      * @param type event type

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Most simple HostProvider, resolves only on instantiation.
- * 
+ * 简单的 HostProvider, 仅在实例化时解决。
  */
 @InterfaceAudience.Public
 public final class StaticHostProvider implements HostProvider {
@@ -50,6 +50,7 @@ public final class StaticHostProvider implements HostProvider {
 
     /**
      * The following fields are used to migrate clients during reconfiguration
+     * 以下字段用于在重新配置期间迁移客户端
      */
     private boolean reconfigMode = false;
 
@@ -107,6 +108,10 @@ public final class StaticHostProvider implements HostProvider {
         lastIndex = -1;              
     }
 
+    
+    /**
+     * 转换以及洗牌 传入的InetSocketAddress集合
+     */
     private List<InetSocketAddress> resolveAndShuffle(Collection<InetSocketAddress> serverAddresses) {
         List<InetSocketAddress> tmpList = new ArrayList<InetSocketAddress>(serverAddresses.size());       
         for (InetSocketAddress address : serverAddresses) {
@@ -217,12 +222,15 @@ public final class StaticHostProvider implements HostProvider {
                 // my server is in new config, but load should be decreased.
                 // Need to decide if this client
                 // is moving to one of the new servers
+                // 我的服务器在新配置中, 但负载应该减少。
+                // 需要确定此客户端是否正在移动到一个新的服务器
                 if (sourceOfRandomness.nextFloat() <= (1 - ((float) this.serverAddresses
                         .size()) / (numOld + numNew))) {
                     pNew = 1;
                     pOld = 0;
                 } else {
                     // do nothing special - stay with the current server
+                    // 不做什么特别的事，依然留在当前服务器
                     reconfigMode = false;
                 }
             } else {

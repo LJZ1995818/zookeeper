@@ -33,13 +33,14 @@ public interface Watcher {
 
     /**
      * This interface defines the possible states an Event may represent
-     * 此接口定义事件可能表示的状态
+     * 此接口定义事件可能表示的状态 
      */
     @InterfaceAudience.Public
     public interface Event {
         /**
          * Enumeration of states the ZooKeeper may be at the event
-         * 列举ZooKeeper可能在事件
+         * 列举ZooKeeper可能在事件 Unknown、Disconnected、NoSyncConnected
+         * SyncConnected、AuthFailed、ConnectedReadOnly、Expired
          */
         @InterfaceAudience.Public
         public enum KeeperState {
@@ -119,6 +120,14 @@ public interface Watcher {
         /**
          * Enumeration of types of events that may occur on the ZooKeeper
          * ZooKeeper可能发生的事件类型的枚举
+         *  None (-1),
+            NodeCreated (1),
+            NodeDeleted (2),
+            NodeDataChanged (3),
+            NodeChildrenChanged (4),
+            DataWatchRemoved (5),
+            ChildWatchRemoved (6);
+
          */
         @InterfaceAudience.Public
         public enum EventType {

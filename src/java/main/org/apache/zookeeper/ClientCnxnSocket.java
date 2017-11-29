@@ -36,6 +36,7 @@ import org.apache.zookeeper.server.ByteBufferInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * A ClientCnxnSocket does the lower level communication with a socket
  * implementation.
@@ -51,12 +52,14 @@ abstract class ClientCnxnSocket {
 
     /**
      * This buffer is only used to read the length of the incoming message.
+     * 此缓冲区仅用于读取传入消息的长度。
      */
     protected final ByteBuffer lenBuffer = ByteBuffer.allocateDirect(4);
 
     /**
      * After the length is read, a new incomingBuffer is allocated in
      * readLength() to receive the full message.
+     * 读取该长度后, 将在 readLength () 中分配一个新的 incomingBuffer 以接收完整消息。
      */
     protected ByteBuffer incomingBuffer = lenBuffer;
     protected long sentCount = 0;
@@ -75,6 +78,9 @@ abstract class ClientCnxnSocket {
      */
     protected long sessionId;
 
+    /**
+     * 初始化
+     */
     void introduce(ClientCnxn.SendThread sendThread, long sessionId, LinkedBlockingDeque<Packet> outgoingQueue) {
         this.sendThread = sendThread;
         this.sessionId = sessionId;
@@ -85,10 +91,16 @@ abstract class ClientCnxnSocket {
         now = Time.currentElapsedTime();
     }
 
+    /**
+     * 获取距离上一次发送心跳包的时差
+     */
     int getIdleRecv() {
         return (int) (now - lastHeard);
     }
 
+    /**
+     * 获取距离上一次发送package的时差
+     */
     int getIdleSend() {
         return (int) (now - lastSend);
     }
@@ -167,11 +179,13 @@ abstract class ClientCnxnSocket {
     /**
      * Clean up resources for a fresh new socket.
      * It's called before reconnect or close.
+     * 为全新的socket清除资源，在reconnect或者close之前调用
      */
     abstract void cleanup();
 
     /**
      * new packets are added to outgoingQueue.
+     * 新的数据包被添加到 outgoingQueue。
      */
     abstract void packetAdded();
 
@@ -188,6 +202,7 @@ abstract class ClientCnxnSocket {
 
     /**
      * being called after ClientCnxn finish PrimeConnection
+     * 在ClientCnxn完成PrimeConnection后调用
      */
     abstract void connectionPrimed();
 

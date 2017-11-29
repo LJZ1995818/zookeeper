@@ -104,6 +104,9 @@ public class Environment {
         return l;
     }
     
+    /**
+     * 记录当前zookeeper环境的的信息
+     */
     public static void logEnv(String msg, Logger log) {
         List<Entry> env = Environment.list();
         for (Entry e : env) {

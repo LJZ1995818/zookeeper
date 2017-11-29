@@ -602,6 +602,7 @@ public abstract class KeeperException extends Exception {
 
     /**
      * @see Code#CONNECTIONLOSS
+     * client与其中的一台server socket链接出现异常
      */
     @InterfaceAudience.Public
     public static class ConnectionLossException extends KeeperException {
@@ -757,6 +758,7 @@ public abstract class KeeperException extends Exception {
 
     /**
      * @see Code#SESSIONEXPIRED
+     * client的session超过sessionTimeout为进行任何操作
      */
     @InterfaceAudience.Public
     public static class SessionExpiredException extends KeeperException {

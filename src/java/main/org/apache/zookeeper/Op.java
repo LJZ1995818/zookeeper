@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Represents a single operation in a multi-operation transaction.  Each operation can be a create, update
  * or delete or can just be a version check.
- *表示多事务中的单个操作。 每个操作可以是创建、更新或删除, 也可以只是版本检查。
+ * 表示多事务中的单个操作。 每个操作可以是创建、更新或删除, 也可以只是版本检查。
  * 
  * 
  * Sub-classes of Op each represent each detailed type but should not normally be referenced except via

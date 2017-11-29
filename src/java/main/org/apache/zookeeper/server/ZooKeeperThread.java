@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
  * This is the main class for catching all the uncaught exceptions thrown by the
  * threads.
  * 这是捕获线程抛出的所有捕获异常的主要类。
+ * 对zookeeper中的线程进行统一的继承，添加了记录异常的记录处理
  */
 public class ZooKeeperThread extends Thread {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(ZooKeeperThread.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ZooKeeperThread.class);
 
     private UncaughtExceptionHandler uncaughtExceptionalHandler = new UncaughtExceptionHandler() {
 
