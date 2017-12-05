@@ -45,6 +45,11 @@ import org.slf4j.LoggerFactory;
  * such as reconfigure cluster membership. The ZooKeeperAdmin class
  * inherits ZooKeeper and has similar usage pattern as ZooKeeper class.
  * Please check {@link ZooKeeper} class document for more details.
+ * 这是ZooKeeperAdmin客户端库的主要类。
+ * 这个库用于执行集群管理任务，
+ * 如重新配置集群成员。ZooKeeperAdmin类
+ * 继承ZooKeeper，并有类似的使用模式作为ZooKeeper类。
+ * 请查看{@ link ZooKeeper}类文档以了解更多细节。
  *
  * @since 3.5.3
  */

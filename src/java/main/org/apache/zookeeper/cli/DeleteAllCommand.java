@@ -27,6 +27,7 @@ import org.apache.zookeeper.ZKUtil;
 
 /**
  * deleteAll command for cli
+ * 删除全部命令
  */
 public class DeleteAllCommand extends CliCommand {
 

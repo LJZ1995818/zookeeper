@@ -28,6 +28,7 @@ import org.apache.zookeeper.server.EphemeralType;
 
 /**
  * create command for cli
+ * 为cli上传的创建命令
  */
 public class CreateCommand extends CliCommand {
 

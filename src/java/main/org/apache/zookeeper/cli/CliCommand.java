@@ -23,6 +23,7 @@ import org.apache.zookeeper.ZooKeeper;
 
 /**
  * base class for all CLI commands
+ * 作为全部CLI 命令的基类
  */
 abstract public class CliCommand {
     protected ZooKeeper zk;
@@ -34,8 +35,10 @@ abstract public class CliCommand {
     /**
      * a CLI command with command string and options.
      * Using System.out and System.err for printing
-     * @param cmdStr the string used to call this command
-     * @param optionStr the string used to call this command 
+     * 带有命令字符串和选项的 CLI 命令。
+     * 使用系统. 输出和系统. 打印错误
+     * @param cmdStr the string used to call this command   命令字符串
+     * @param optionStr the string used to call this command  参数字符串
      */
     public CliCommand(String cmdStr, String optionStr) {
         this.out = System.out;

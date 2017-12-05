@@ -19,6 +19,7 @@ package org.apache.zookeeper.cli;
 
 /**
  * close command for cli
+ * 关闭命令行
  */
 public class CloseCommand extends CliCommand {
 

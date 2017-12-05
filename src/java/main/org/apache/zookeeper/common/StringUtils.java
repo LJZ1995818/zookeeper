@@ -19,7 +19,9 @@ package org.apache.zookeeper.common;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
-
+/**
+ * 字符串的工具类 包含join 和 split
+ */
 public class StringUtils {
 
     private StringUtils() {/** non instantiable and non inheritable **/}

@@ -30,6 +30,7 @@ public class AclParser {
 
     /**
      * parse string into list of ACL
+     * 将字符串参数转换为ACL   list
      * @param aclString
      * @return 
      */

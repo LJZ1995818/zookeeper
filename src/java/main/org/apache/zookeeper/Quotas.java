@@ -22,6 +22,7 @@ package org.apache.zookeeper;
  * this class manages quotas
  * and has many other utils
  * for quota
+ * 这个类管理quotas，并且还有许多用于quotas的工具
  */
 public class Quotas {
 

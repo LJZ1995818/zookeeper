@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 package org.apache.zookeeper.cli;
-
+/**
+ * 命令行未发现
+ */
 @SuppressWarnings("serial")
 public class CommandNotFoundException extends CliException {
 
