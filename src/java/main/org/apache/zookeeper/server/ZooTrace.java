@@ -26,8 +26,11 @@ import org.apache.zookeeper.server.quorum.QuorumPacket;
 /**
  * This class encapsulates and centralizes tracing for the ZooKeeper server.
  * Trace messages go to the log with TRACE level.
+ * 此类封装并集中跟踪管理员服务器。
+ * 跟踪消息转到具有跟踪级别的日志。
  * <p>
  * Log4j must be correctly configured to capture the TRACE messages.
+ * Log4j 必须正确配置才能捕获跟踪消息。
  */
 public class ZooTrace {
     final static public long CLIENT_REQUEST_TRACE_MASK = 1 << 1;

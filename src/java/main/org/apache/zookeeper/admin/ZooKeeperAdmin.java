@@ -166,6 +166,7 @@ public class ZooKeeperAdmin extends ZooKeeper {
 
     /**
      * Reconfigure - add/remove servers. Return the new configuration.
+     * 重新配置 - 添加/移除 服务器。返回新的配置
      * @param joiningServers
      *                a comma separated list of servers being added (incremental reconfiguration)
      * @param leavingServers

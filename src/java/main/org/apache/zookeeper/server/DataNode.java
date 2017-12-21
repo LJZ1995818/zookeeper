@@ -31,9 +31,12 @@ import org.apache.zookeeper.data.StatPersisted;
 
 /**
  * This class contains the data for a node in the data tree.
+ * 此类包含数据树中某个节点的数据。
  * <p>
  * A data node contains a reference to its parent, a byte array as its data, an
  * array of ACLs, a stat object, and a set of its children's paths.
+ * 数据节点包含对其父级的引用, 将字节数组作为其数据,
+ * acl 数组、统计对象和一组子路径。
  * 
  */
 public class DataNode implements Record {

@@ -35,6 +35,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * 引用计数 ACL 缓存
+ */
 public class ReferenceCountedACLCache {
     private static final Logger LOG = LoggerFactory.getLogger(ReferenceCountedACLCache.class);
 
@@ -44,18 +47,24 @@ public class ReferenceCountedACLCache {
     final Map<List<ACL>, Long> aclKeyMap =
             new HashMap<List<ACL>, Long>();
 
+    /**
+     * 用于标记 每个Acl的引用数 
+     */
     final Map<Long, AtomicLongWithEquals> referenceCounter =
             new HashMap<Long, AtomicLongWithEquals>();
-    private static final long OPEN_UNSAFE_ACL_ID = -1L;
+    private static final long OPEN_UNSAFE_ACL_ID = -1L;// 相当于 @ZooDefs.Ids.OPEN_ACL_UNSAFE
 
     /**
      * these are the number of acls that we have in the datatree
+     * 这个是我们在 datatree 中用来标记 acl 的索引
      */
     long aclIndex = 0;
 
     /**
      * converts the list of acls to a long.
      * Increments the reference counter for this ACL.
+     * 将acl list 转换为 long 
+     * 增加ACL缓存的索引书
      * @param acls
      * @return a long that map to the acls
      */
@@ -95,6 +104,9 @@ public class ReferenceCountedACLCache {
         return acls;
     }
 
+    /**
+     * 增加acl的索引号
+     */
     private long incrementIndex() {
         return ++aclIndex;
     }
@@ -146,6 +158,9 @@ public class ReferenceCountedACLCache {
         referenceCounter.clear();
     }
 
+    /**
+     * 添加acl 的引用计数
+     */
     public synchronized void addUsage(Long acl) {
         if (acl == OPEN_UNSAFE_ACL_ID) {
             return;
@@ -164,6 +179,9 @@ public class ReferenceCountedACLCache {
         }
     }
 
+    /**
+     * 减少 acl 的引用计数
+     */
     public synchronized void removeUsage(Long acl) {
         if (acl == OPEN_UNSAFE_ACL_ID) {
             return;
@@ -182,6 +200,9 @@ public class ReferenceCountedACLCache {
         }
     }
 
+    /**
+     * 清除 引用
+     */
     public synchronized void purgeUnused() {
         Iterator<Map.Entry<Long, AtomicLongWithEquals>> refCountIter = referenceCounter.entrySet().iterator();
         while (refCountIter.hasNext()) {
@@ -195,6 +216,9 @@ public class ReferenceCountedACLCache {
         }
     }
 
+    /**
+     * 对AtomicLong添加了  判断相同的功能 使用的是 AtomicLong.get() 方法获取 long
+     */
     private static class AtomicLongWithEquals extends AtomicLong {
 
         private static final long serialVersionUID = 3355155896813725462L;

@@ -22,6 +22,7 @@ import java.util.Map;
 
 /**
  * A summary of watch information. This class is immutable.
+ * 监视信息的摘要。此类是不可变的。
  */
 public class WatchesSummary {
 

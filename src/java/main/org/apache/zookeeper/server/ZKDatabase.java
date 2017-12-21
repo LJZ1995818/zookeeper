@@ -62,6 +62,10 @@ import org.slf4j.LoggerFactory;
  * server states that includes the sessions, datatree and the
  * committed logs. It is booted up  after reading the logs
  * and snapshots from the disk.
+ * 这个类维护zookeeper的内存数据库
+ * 服务器状态，包括会话、datatree和
+ * 提交日志。读了日志后，它被启动了
+ * 和来自磁盘的快照。
  */
 public class ZKDatabase {
 
@@ -77,7 +81,7 @@ public class ZKDatabase {
     protected long minCommittedLog, maxCommittedLog;
 
     /**
-     * Default value is to use snapshot if txnlog size exceeds 1/3 the size of snapshot
+     * 如果 txnlog 大小超过1/3 的快照大小, 则默认值为使用快照
      */
     public static final String SNAPSHOT_SIZE_FACTOR = "zookeeper.snapshotSizeFactor";
     public static final double DEFAULT_SNAPSHOT_SIZE_FACTOR = 0.33;

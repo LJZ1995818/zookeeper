@@ -48,8 +48,14 @@ import org.apache.zookeeper.server.util.SerializeUtils;
  * it is responsible for storing, serializing
  * and deserializing the right snapshot.
  * and provides access to the snapshots.
+ * 这个类实现快照接口。
+ * 负责存储、序列化并反序列化正确的快照。
+ * 提供对快照的访问。
  */
 public class FileSnap implements SnapShot {
+    /**
+     * 快照目录
+     */
     File snapDir;
     private volatile boolean close = false;
     private static final int VERSION = 2;
@@ -64,6 +70,7 @@ public class FileSnap implements SnapShot {
 
     /**
      * deserialize a data tree from the most recent snapshot
+     * 从最近的快照中序列化一颗  数据树
      * @return the zxid of the snapshot
      */
     public long deserialize(DataTree dt, Map<Long, Integer> sessions)
@@ -104,6 +111,8 @@ public class FileSnap implements SnapShot {
 
     /**
      * deserialize the datatree from an inputarchive
+     * 从一个inputarchive中序列化datatree，也就是从一个快照文件中组成的流程进行反序列化
+     * 
      * @param dt the datatree to be serialized into
      * @param sessions the sessions to be filled up
      * @param ia the input archive to restore from
@@ -140,6 +149,12 @@ public class FileSnap implements SnapShot {
      * not mean that the snapshot is truly valid but is
      * valid with a high probability. also, the most recent 
      * will be first on the list. 
+     * 查找最后 (可能) 有效的 n 个快照。这是一些
+     * 对快照有效性的次要检查。它只是
+     * 检查快照的末尾。这样做
+     * 不意味着快照是真正有效的, 但
+     * 有效率高。此外, 最近
+     * 将是第一个在名单上。
      * @param n the number of most recent snapshots
      * @return the last n snapshots (the number might be
      * less than n in case enough snapshots are not available).
@@ -170,7 +185,7 @@ public class FileSnap implements SnapShot {
 
     /**
      * find the last n snapshots. this does not have
-     * any checks if the snapshot might be valid or not
+     * any checks if the snapshot might be valid or not（不进行内容验证）
      * @param n the number of most recent snapshots
      * @return the last n snapshots
      * @throws IOException
@@ -211,10 +226,12 @@ public class FileSnap implements SnapShot {
 
     /**
      * serialize the datatree and session into the file snapshot
+     * 序列化 datatree 和session 到一个快照文件中
+     * 
      * @param dt the datatree to be serialized
      * @param sessions the sessions to be serialized
      * @param snapShot the file to store snapshot into
-     * @param fsync sync the file immediately after write
+     * @param fsync 是否使用同步文件快照
      */
     public synchronized void serialize(DataTree dt, Map<Long, Integer> sessions, File snapShot, boolean fsync)
             throws IOException {

@@ -77,7 +77,7 @@ public class AtomicFileOutputStream extends FilterOutputStream {
     @Override
     public void close() throws IOException {
         boolean triedToClose = false, success = false;
-        try {
+        try {// 关闭文件流
             flush();
             ((FileOutputStream) out).getFD().sync();
 
@@ -101,7 +101,7 @@ public class AtomicFileOutputStream extends FilterOutputStream {
                     // an FD
                     IOUtils.closeStream(out);
                 }
-                // close wasn't successful, try to delete the tmp file
+                // 如果close失败，则删除temp文件
                 if (!tmpFile.delete()) {
                     LOG.warn("Unable to delete tmp file " + tmpFile);
                 }
@@ -112,6 +112,7 @@ public class AtomicFileOutputStream extends FilterOutputStream {
     /**
      * Close the atomic file, but do not "commit" the temporary file on top of
      * the destination. This should be used if there is a failure in writing.
+     * 关闭原子文件, 但不要 "提交" 到目标顶部的临时文件。如果书写失败, 应使用此方法。
      */
     public void abort() {
         try {

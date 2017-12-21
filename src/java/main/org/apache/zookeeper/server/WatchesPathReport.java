@@ -26,6 +26,9 @@ import java.util.Set;
 /**
  * A watch report, essentially a mapping of path to session IDs of sessions that
  * have set a watch on that path. This class is immutable.
+ * 监视报告, 实质上是对会话 id 路径的映射,
+ * 在那条路上设置了一只手表。此类是不可变的。
+ * Path To Array[SessionId]
  */
 public class WatchesPathReport {
 

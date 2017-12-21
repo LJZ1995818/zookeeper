@@ -23,25 +23,25 @@ package org.apache.zookeeper.server;
  */
 public interface DataTreeMXBean {
     /**
-     * @return number of znodes in the data tree.
+     * @return number of znodes in the data tree.datatree中的Znode节点
      */
     public int getNodeCount();
     /**
-     * @return the most recent zxid processed by the data tree.
+     * @return the most recent zxid processed by the data tree. 获取datatree最新的zxid
      */
     public String getLastZxid();
     /**
-     * @return number of watches set.
+     * @return number of watches set. 获取watches的数目
      */
     public int getWatchCount();
     
     /**
      * @return data tree size in bytes. The size includes the znode path and 
-     * its value.
+     * its value.获取datatree的数据大小（大概），大小包括znode路径和他的值
      */
     public long approximateDataSize();
     /**
-     * @return number of ephemeral nodes in the data tree
+     * @return number of ephemeral nodes in the data tree 获取datatree中的短暂节点
      */
     public int countEphemerals();
 }

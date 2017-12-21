@@ -21,6 +21,7 @@ package org.apache.zookeeper;
 /**
  * a class that represents the stats associated with quotas
  * 一个表示与配额相关的统计信息的类
+ * 限制 节点的count 
  */
 public class StatsTrack {
     private int count;
@@ -39,6 +40,7 @@ public class StatsTrack {
      * the stat string should be of the form count=int,bytes=long
      * if stats is called with null the count and bytes are initialized
      * to -1.
+     *  字符串格式 “count=-1,bytes=-1” ，用于对Quotas对信息的处理 中间类
      * @param stats the stat string to be intialized with
      */
     public StatsTrack(String stats) {

@@ -46,9 +46,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * 序列化工具 序列化快照文件和 事务日志
+ */
 public class SerializeUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SerializeUtils.class);
-    
+
+    /**
+     * 序列化事务日志
+     * @param txnBytes 日志二进制内容
+     * @param hdr 事务头内容
+     * @return
+     * @throws IOException
+     */
     public static Record deserializeTxn(byte txnBytes[], TxnHeader hdr)
             throws IOException {
         final ByteArrayInputStream bais = new ByteArrayInputStream(txnBytes);
@@ -120,6 +130,9 @@ public class SerializeUtils {
         return txn;
     }
 
+    /**
+     * 先反序列化sessions数组（id、过期时间），然后再反序列化 datatree
+     */
     public static void deserializeSnapshot(DataTree dt,InputArchive ia,
             Map<Long, Integer> sessions) throws IOException {
         int count = ia.readInt("count");
@@ -137,6 +150,9 @@ public class SerializeUtils {
         dt.deserialize(ia, "tree");
     }
 
+    /**
+     * 先序列化session 然后在序列化datatree
+     */
     public static void serializeSnapshot(DataTree dt,OutputArchive oa,
             Map<Long, Integer> sessions) throws IOException {
         HashMap<Long, Integer> sessSnap = new HashMap<Long, Integer>(sessions);

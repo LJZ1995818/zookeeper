@@ -80,6 +80,7 @@ public class Util {
 
     /**
      * Creates a valid transaction log file name. 
+     * 创建一个有效的事务日志文件名称（log  开头）
      * 
      * @param zxid used as a file name suffix (extension)
      * @return file name
@@ -90,6 +91,7 @@ public class Util {
 
     /**
      * Creates a snapshot file name.
+     * 创建一个快照文件（snapshot 开头）
      * 
      * @param zxid used as a suffix
      * @return file name
@@ -131,6 +133,7 @@ public class Util {
     /**
      * Extracts zxid from the file name. The file name should have been created
      * using one of the {@link #makeLogName(long)} or {@link #makeSnapshotName(long)}.
+     * 从文件名中提取zxid，这个文件名应该是通过makeLogName或者makeSnapshotName 创建的
      * 
      * @param name the file name to parse
      * @param prefix the file name prefix (snapshot or log)
@@ -153,7 +156,9 @@ public class Util {
      * it's incomplete as in a situation when the server dies while in the process
      * of storing a snapshot. Any file that is not a snapshot is also 
      * an invalid snapshot. 
-     * 
+     * 验证该文件是否为有效的快照。快照可能无效,
+     * 如果当服务器在过程中死亡时, 它不完整存储快照。
+     * 任何非快照的文件也无效的快照。
      * @param f file to verify
      * @return true if the snapshot is valid
      * @throws IOException
@@ -199,6 +204,7 @@ public class Util {
      * Grows the file to the specified number of bytes. This only happenes if
      * the current file position is sufficiently close (less than 4K) to end of 
      * file. 
+     * 如果当前文件的位置是足够接近 (少于 4K) 结束文件，将文件增长到指定的字节数.
      * 
      * @param f output stream to pad
      * @param currentSize application keeps track of the current file size
@@ -220,6 +226,7 @@ public class Util {
 
     /**
      * Reads a transaction entry from the input archive.
+     * 从input archive 中读取 事务实体
      * @param ia archive to read from
      * @return null if the entry is corrupted or EOF has been reached; a buffer
      * (possible empty) containing serialized transaction record.
@@ -244,7 +251,8 @@ public class Util {
 
     /**
      * Serializes transaction header and transaction data into a byte buffer.
-     *  
+     * 将事务头和事务数据序列化为字节缓冲区。
+     * 
      * @param hdr transaction header
      * @param txn transaction data
      * @return serialized transaction record
@@ -264,7 +272,7 @@ public class Util {
 
     /**
      * Write the serialized transaction record to the output archive.
-     *  
+     * 将序列化的事务日志写入到 output archive中，并在末尾添加 'B' 表示结束
      * @param oa output archive
      * @param bytes serialized transaction record
      * @throws IOException
@@ -279,6 +287,7 @@ public class Util {
     /**
      * Compare file file names of form "prefix.version". Sort order result
      * returned in order of version.
+     * 比较文件名称，格式:prefix.version.按照顺序结果按版本顺序返回
      */
     private static class DataDirFileComparator
         implements Comparator<File>, Serializable
@@ -287,6 +296,11 @@ public class Util {
 
         private String prefix;
         private boolean ascending;
+
+        /**
+         * @param prefix 文件的前缀
+         * @param ascending 是否是正序排列
+         */
         public DataDirFileComparator(String prefix, boolean ascending) {
             this.prefix = prefix;
             this.ascending = ascending;
@@ -303,6 +317,7 @@ public class Util {
     /**
      * Sort the list of files. Recency as determined by the version component
      * of the file name.
+     * 排序文件列表，由版本组件确定排序顺序
      *
      * @param files array of files
      * @param prefix files not matching this prefix are assumed to have a

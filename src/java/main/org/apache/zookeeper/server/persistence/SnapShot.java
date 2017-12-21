@@ -27,12 +27,14 @@ import org.apache.zookeeper.server.DataTree;
  * snapshot interface for the persistence layer.
  * implement this interface for implementing 
  * snapshots.
+ * 持久层的快照接口，实现接口用于实现快照功能
  */
 public interface SnapShot {
     
     /**
      * deserialize a data tree from the last valid snapshot and 
      * return the last zxid that was deserialized
+     * 从最近有效的快照中饭序列化一个数据树，并返回最新的zxid
      * @param dt the datatree to be deserialized into
      * @param sessions the sessions to be deserialized into
      * @return the last zxid that was deserialized from the snapshot
@@ -43,6 +45,7 @@ public interface SnapShot {
     
     /**
      * persist the datatree and the sessions into a persistence storage
+     * 持久化数据树和会话到一个文件中
      * @param dt the datatree to be serialized
      * @param sessions the session timeouts to be serialized
      * @param name the object name to store snapshot into
@@ -55,6 +58,7 @@ public interface SnapShot {
     
     /**
      * find the most recent snapshot file
+     * 发现最近的快照记录
      * @return the most recent snapshot file
      * @throws IOException
      */
@@ -62,6 +66,7 @@ public interface SnapShot {
     
     /**
      * free resources from this snapshot immediately
+     * 立即从该快照获得释放资源
      * @throws IOException
      */
     void close() throws IOException;

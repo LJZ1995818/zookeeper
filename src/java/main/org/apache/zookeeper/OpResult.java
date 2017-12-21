@@ -18,7 +18,7 @@
 package org.apache.zookeeper;
 
 
-import org.apache.commons.collections.FastArrayList;
+//import org.apache.commons.collections.FastArrayList;
 import org.apache.zookeeper.data.Stat;
 
 /**

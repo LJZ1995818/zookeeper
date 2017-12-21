@@ -25,6 +25,7 @@ import org.apache.zookeeper.txn.TxnHeader;
 
 /**
  * Interface for reading transaction logs.
+ * 读取事务性日志的接口
  *
  */
 public interface TxnLog {
@@ -32,11 +33,13 @@ public interface TxnLog {
     /**
      * roll the current
      * log being appended to
+     * 回滚当前日志
      * @throws IOException 
      */
     void rollLog() throws IOException;
     /**
      * Append a request to the transaction log
+     * 添加一个请求到事务日志中
      * @param hdr the transaction header
      * @param r the transaction itself
      * returns true iff something appended, otw false 
@@ -47,6 +50,7 @@ public interface TxnLog {
     /**
      * Start reading the transaction logs
      * from a given zxid
+     * 根据一个给定zxid，读取事务日志
      * @param zxid
      * @return returns an iterator to read the 
      * next transaction in the logs.
@@ -56,14 +60,15 @@ public interface TxnLog {
     
     /**
      * the last zxid of the logged transactions.
+     * 获取最新的事务zxid
      * @return the last zxid of the logged transactions.
      * @throws IOException
      */
     long getLastLoggedZxid() throws IOException;
     
     /**
-     * truncate the log to get in sync with the 
-     * leader.
+     * truncate the log to get in sync with the leader.
+     * 截断日志以使其与learder同步
      * @param zxid the zxid to truncate at.
      * @throws IOException 
      */
@@ -71,6 +76,7 @@ public interface TxnLog {
     
     /**
      * the dbid for this transaction log. 
+     * 获取事务性日志的数据库ID
      * @return the dbid for this transaction log.
      * @throws IOException
      */
@@ -79,6 +85,7 @@ public interface TxnLog {
     /**
      * commit the transaction and make sure
      * they are persisted
+     * 提交事务并确认他们已经持久化
      * @throws IOException
      */
     void commit() throws IOException;
@@ -91,11 +98,13 @@ public interface TxnLog {
    
     /** 
      * close the transactions logs
+     * 关闭事务日志
      */
     void close() throws IOException;
     /**
      * an iterating interface for reading 
-     * transaction logs. 
+     * transaction logs.
+     * 一个迭代接口用于读取事务日志
      */
     public interface TxnIterator {
         /**

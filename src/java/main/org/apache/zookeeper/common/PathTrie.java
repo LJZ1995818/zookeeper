@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 由  路径  转换为 前缀树 用于存储
  * a class that implements prefix matching for 
  * components of a filesystem path. the trie
  * looks like a tree with edges mapping to 
@@ -52,10 +53,16 @@ public class PathTrie {
      */
     private final TrieNode rootNode ;
     
+    /**
+     * 前缀树节点
+     */
     static class TrieNode {
+        /**
+         * 标记是否为有效节点
+         */
         boolean property = false;
-        final Map<String, TrieNode> children;
-        TrieNode parent = null;
+        final Map<String, TrieNode> children;// 子节点集合
+        TrieNode parent = null;// 父节点
         /**
          * create a trienode with parent
          * as parameter
@@ -83,9 +90,7 @@ public class PathTrie {
         }
         
         /**
-         * a property that is set 
-         * for a node - making it 
-         * special.
+         * 当删除此节点是，如果他们有更多子节点，则只是将属性设置为false，并不删除
          */
         void setProperty(boolean prop) {
             this.property = prop;
@@ -191,7 +196,7 @@ public class PathTrie {
     }
     
     /**
-     * add a path to the path trie 
+     * 添加一个路径到路径树中，并将添加的节点设置为 有效节点
      * @param path
      */
     public void addPath(String path) {

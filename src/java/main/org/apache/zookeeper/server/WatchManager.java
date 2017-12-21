@@ -21,7 +21,6 @@ package org.apache.zookeeper.server;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -34,21 +33,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class manages watches. It allows watches to be associated with a string
+ * This class manages watches. It allows watches to be associated（关联） with a string
  * and removes watchers and their watches in addition to managing triggers.
+ * 此类管理watches。它允许watches与字符串关联
+ * 除管理触发器外, 还删除观察者及其监视。
  */
 class WatchManager {
     private static final Logger LOG = LoggerFactory.getLogger(WatchManager.class);
 
-    private final Map<String, Set<Watcher>> watchTable =
-        new HashMap<String, Set<Watcher>>();
+    private final Map<String, Set<Watcher>> watchTable = new HashMap<String, Set<Watcher>>();
 
-    private final Map<Watcher, Set<String>> watch2Paths =
-        new HashMap<Watcher, Set<String>>();
+    private final Map<Watcher, Set<String>> watch2Paths = new HashMap<Watcher, Set<String>>();
 
-    synchronized int size(){
+    /**
+     * 获取所有的watcher的数据
+     */
+    synchronized int size() {
         int result = 0;
-        for(Set<Watcher> watches : watchTable.values()) {
+        for (Set<Watcher> watches : watchTable.values()) {
             result += watches.size();
         }
         return result;
@@ -60,6 +62,9 @@ class WatchManager {
             // don't waste memory if there are few watches on a node
             // rehash when the 4th entry is added, doubling size thereafter
             // seems like a good compromise
+            // 如果节点上的表很少, 请不要浪费内存
+            // 在添加第四条目时再重复一遍, 之后再翻一番
+            // 似乎是一个很好的妥协
             list = new HashSet<Watcher>(4);
             watchTable.put(path, list);
         }
@@ -94,17 +99,19 @@ class WatchManager {
         return triggerWatch(path, type, null);
     }
 
+    /**
+     * 异常要触发的watcher
+     * 
+     * @param supress 对这个集合内的watcher不进行触发和删除
+     */
     Set<Watcher> triggerWatch(String path, EventType type, Set<Watcher> supress) {
-        WatchedEvent e = new WatchedEvent(type,
-                KeeperState.SyncConnected, path);
+        WatchedEvent e = new WatchedEvent(type, KeeperState.SyncConnected, path);
         Set<Watcher> watchers;
         synchronized (this) {
             watchers = watchTable.remove(path);
             if (watchers == null || watchers.isEmpty()) {
-                if (LOG.isTraceEnabled()) {
-                    ZooTrace.logTraceMessage(LOG,
-                            ZooTrace.EVENT_DELIVERY_TRACE_MASK,
-                            "No watchers for " + path);
+                if (LOG.isTraceEnabled()) {// 记录watcher为null的信息
+                    ZooTrace.logTraceMessage(LOG, ZooTrace.EVENT_DELIVERY_TRACE_MASK, "No watchers for " + path);
                 }
                 return null;
             }
@@ -131,8 +138,7 @@ class WatchManager {
     public synchronized String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(watch2Paths.size()).append(" connections watching ")
-            .append(watchTable.size()).append(" paths\n");
+        sb.append(watch2Paths.size()).append(" connections watching ").append(watchTable.size()).append(" paths\n");
 
         int total = 0;
         for (Set<String> paths : watch2Paths.values()) {
@@ -145,6 +151,7 @@ class WatchManager {
 
     /**
      * String representation of watches. Warning, may be large!
+     * 打印表的数据 两种模式（watchTable、watch2Paths），信息可能很大
      * @param byPath iff true output watches by paths, otw output
      * watches by connection
      * @return string representation of watches
@@ -155,14 +162,14 @@ class WatchManager {
                 pwriter.println(e.getKey());
                 for (Watcher w : e.getValue()) {
                     pwriter.print("\t0x");
-                    pwriter.print(Long.toHexString(((ServerCnxn)w).getSessionId()));
+                    pwriter.print(Long.toHexString(((ServerCnxn) w).getSessionId()));
                     pwriter.print("\n");
                 }
             }
         } else {
             for (Entry<Watcher, Set<String>> e : watch2Paths.entrySet()) {
                 pwriter.print("0x");
-                pwriter.println(Long.toHexString(((ServerCnxn)e.getKey()).getSessionId()));
+                pwriter.println(Long.toHexString(((ServerCnxn) e.getKey()).getSessionId()));
                 for (String path : e.getValue()) {
                     pwriter.print("\t");
                     pwriter.println(path);
@@ -223,7 +230,7 @@ class WatchManager {
      */
     synchronized WatchesReport getWatches() {
         Map<Long, Set<String>> id2paths = new HashMap<Long, Set<String>>();
-        for (Entry<Watcher, Set<String>> e: watch2Paths.entrySet()) {
+        for (Entry<Watcher, Set<String>> e : watch2Paths.entrySet()) {
             Long id = ((ServerCnxn) e.getKey()).getSessionId();
             Set<String> paths = new HashSet<String>(e.getValue());
             id2paths.put(id, paths);
@@ -251,7 +258,8 @@ class WatchManager {
 
     /**
      * Returns a watch summary.
-     *
+     * 返回一个watch概要
+     * 
      * @return watch summary
      * @see WatchesSummary
      */
@@ -260,7 +268,6 @@ class WatchManager {
         for (Set<String> paths : watch2Paths.values()) {
             totalWatches += paths.size();
         }
-        return new WatchesSummary (watch2Paths.size(), watchTable.size(),
-                                   totalWatches);
+        return new WatchesSummary(watch2Paths.size(), watchTable.size(), totalWatches);
     }
 }

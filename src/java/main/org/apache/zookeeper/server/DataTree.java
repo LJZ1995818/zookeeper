@@ -71,10 +71,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * This class maintains the tree data structure. It doesn't have any networking
  * or client connection code in it so that it can be tested in a stand alone
  * way.
+ * 这个类维护树数据结构。它没有任何网络
+ * 或客户端连接代码，使其能够以独立的方式进行测试。
  * <p>
  * The tree maintains two parallel data structures: a hashtable that maps from
  * full paths to DataNodes and a tree of DataNodes. All accesses to a path is
  * through the hashtable. The tree is traversed only when serializing to disk.
+ * 树维护两个并行数据结构:一个映射的散列表
+ * DataNodes和DataNodes树的完整路径。所有对路径的访问都是
+ * 通过哈希表。树只有在序列化到磁盘时才被遍历。
+ * 
  */
 public class DataTree {
     private static final Logger LOG = LoggerFactory.getLogger(DataTree.class);
@@ -93,34 +99,40 @@ public class DataTree {
     /** the root of zookeeper tree */
     private static final String rootZookeeper = "/";
 
-    /** the zookeeper nodes that acts as the management and status node **/
+    /** the zookeeper nodes that acts as the management and status node "/zookeeper" **/
     private static final String procZookeeper = Quotas.procZookeeper;
 
-    /** this will be the string thats stored as a child of root */
+    /** this will be the string thats stored as a child of root
+     * <BR/>
+     * "zookeeper"
+     */
     private static final String procChildZookeeper = procZookeeper.substring(1);
 
     /**
      * the zookeeper quota node that acts as the quota management node for
      * zookeeper
      */
-    private static final String quotaZookeeper = Quotas.quotaZookeeper;
+    private static final String quotaZookeeper = Quotas.quotaZookeeper;//"/zookeeper/quota"
 
     /** this will be the string thats stored as a child of /zookeeper */
     private static final String quotaChildZookeeper = quotaZookeeper
             .substring(procZookeeper.length() + 1);
 
     /**
-     * the zookeeper config node that acts as the config management node for
-     * zookeeper
+     * the zookeeper config node that acts as the config management node for zookeeper
+     * "/zookeeper/config"
      */
-    private static final String configZookeeper = ZooDefs.CONFIG_NODE;
+    private static final String configZookeeper = ZooDefs.CONFIG_NODE;//
 
-    /** this will be the string thats stored as a child of /zookeeper */
+    /** this will be the string thats stored as a child of /zookeeper <BR/>
+     * "config"
+     */
     private static final String configChildZookeeper = configZookeeper
             .substring(procZookeeper.length() + 1);
 
     /**
      * the path trie that keeps track fo the quota nodes in this datatree
+     * 跟踪此数据树中配额节点的路径树
      */
     private final PathTrie pTrie = new PathTrie();
 
@@ -209,6 +221,8 @@ public class DataTree {
     /**
      * This is a pointer to the root of the DataTree. It is the source of truth,
      * but we usually use the nodes hashmap to find nodes in the tree.
+     * 这是一个指向 DataTree 的根的指针。它是真理的源泉,
+     * 但我们通常使用节点 hashmap 来查找树中的节点。
      */
     private DataNode root = new DataNode(new byte[0], -1L, new StatPersisted());
 
@@ -224,9 +238,11 @@ public class DataTree {
     private final DataNode quotaDataNode = new DataNode(new byte[0], -1L, new StatPersisted());
 
     public DataTree() {
-        /* Rather than fight it, let root have an alias */
+        /* Rather than fight it, let root have an alias 
+        * "" 和 "/" 都是指向根节点
+        */
         nodes.put("", root);
-        nodes.put(rootZookeeper, root);
+        nodes.put(rootZookeeper, root);//   "/"
 
         /** add the proc node and quota node */
         root.addChild(procChildZookeeper);
@@ -241,6 +257,7 @@ public class DataTree {
     /**
      * create a /zookeeper/config node for maintaining the configuration (membership and quorum system) info for
      * zookeeper
+     * 创建一个  "/zookeeper/config"  节点以维护管理员的配置 (成员资格和仲裁系统) 信息
      */
     public void addConfigNode() {
         DataNode zookeeperZnode = nodes.get(procZookeeper);
@@ -262,7 +279,7 @@ public class DataTree {
 
     /**
      * is the path one of the special paths owned by zookeeper.
-     *
+     * "/","/zookeeper"，"/zookeeper/quota"，"/zookeeper/config"
      * @param path
      *            the path to be checked
      * @return true if a special path. false if not.
@@ -305,9 +322,9 @@ public class DataTree {
      * update the count of this stat datanode
      *
      * @param lastPrefix
-     *            the path of the node that is quotaed.
+     *            quotaed 的节点的路径。
      * @param diff
-     *            the diff to be added to the count
+     *            要添加到计数中的差异
      */
     public void updateCount(String lastPrefix, int diff) {
         String statNode = Quotas.statPath(lastPrefix);
@@ -321,7 +338,7 @@ public class DataTree {
         synchronized (node) {
             updatedStat = new StatsTrack(new String(node.data));
             updatedStat.setCount(updatedStat.getCount() + diff);
-            node.data = updatedStat.toString().getBytes();
+            node.data = updatedStat.toString().getBytes();// 更新 quotas state 节点 数据
         }
         // now check if the counts match the quota
         String quotaNode = Quotas.quotaPath(lastPrefix);
@@ -350,8 +367,6 @@ public class DataTree {
      *            the path of the node that is quotaed
      * @param diff
      *            the diff to added to number of bytes
-     * @throws IOException
-     *             if path is not found
      */
     public void updateBytes(String lastPrefix, long diff) {
         String statNode = Quotas.statPath(lastPrefix);
@@ -392,16 +407,16 @@ public class DataTree {
     /**
      * Add a new node to the DataTree.
      * @param path
-     * 			  Path for the new node.
+     * 			  Path for the new node. 新节点的路径
      * @param data
-     *            Data to store in the node.
+     *            Data to store in the node. 在这个节点中存储的数据
      * @param acl
-     *            Node acls
+     *            Node acls 节点的acl 权限
      * @param ephemeralOwner
      *            the session id that owns this node. -1 indicates this is not
-     *            an ephemeral node.
+     *            an ephemeral node. 这个节点的拥有者的session id，-1表示他不是一个暂时的数据节点
      * @param zxid
-     *            Transaction ID
+     *            Transaction ID 事务ID
      * @param time
      * @throws NodeExistsException
      * @throws NoNodeException
@@ -429,14 +444,14 @@ public class DataTree {
      * @param time
      * @param outputStat
      * 			  A Stat object to store Stat output results into.
+     *            返回当前数据节点状态
      * @throws NodeExistsException
      * @throws NoNodeException
      * @throws KeeperException
      */
     public void createNode(final String path, byte data[], List<ACL> acl,
             long ephemeralOwner, int parentCVersion, long zxid, long time, Stat outputStat)
-            throws KeeperException.NoNodeException,
-            KeeperException.NodeExistsException {
+            throws KeeperException.NoNodeException,KeeperException.NodeExistsException {
         int lastSlash = path.lastIndexOf('/');
         String parentName = path.substring(0, lastSlash);
         String childName = path.substring(lastSlash + 1);
@@ -469,6 +484,7 @@ public class DataTree {
             DataNode child = new DataNode(data, longval, stat);
             parent.addChild(childName);
             nodes.put(path, child);
+            // 按照节点 ephemeralType 进行分类
             EphemeralType ephemeralType = EphemeralType.get(ephemeralOwner);
             if (ephemeralType == EphemeralType.CONTAINER) {
                 containers.add(path);
@@ -496,21 +512,22 @@ public class DataTree {
                 // get the parent and add it to the trie
                 pTrie.addPath(parentName.substring(quotaZookeeper.length()));
             }
-            if (Quotas.statNode.equals(childName)) {
+            if (Quotas.statNode.equals(childName)) {// 更新定额状态
                 updateQuotaForPath(parentName
                         .substring(quotaZookeeper.length()));
             }
         }
         // also check to update the quotas for this node
+        // 也需要检查  这个节点的定额状态
         String lastPrefix = getMaxPrefixWithQuota(path);
         if(lastPrefix != null) {
             // ok we have some match and need to update
             updateCount(lastPrefix, 1);
             updateBytes(lastPrefix, data == null ? 0 : data.length);
         }
-        dataWatches.triggerWatch(path, Event.EventType.NodeCreated);
+        dataWatches.triggerWatch(path, Event.EventType.NodeCreated);// 触发节点创建 触发器
         childWatches.triggerWatch(parentName.equals("") ? "/" : parentName,
-                Event.EventType.NodeChildrenChanged);
+                Event.EventType.NodeChildrenChanged);// 触发 子节点 创建触发器
     }
 
     /**
@@ -683,6 +700,9 @@ public class DataTree {
         }
     }
 
+    /**
+     * 对相应路径的节点 设置acl权限
+     */
     public Stat setACL(String path, List<ACL> acl, int version)
             throws KeeperException.NoNodeException {
         Stat stat = new Stat();
@@ -768,6 +788,12 @@ public class DataTree {
 
     public volatile long lastProcessedZxid = 0;
 
+    /**
+     * 对当前datatree执行事务日志
+     * @param header 日志头信息
+     * @param txn 日志事务内容
+     * @return
+     */
     public ProcessTxnResult processTxn(TxnHeader header, Record txn)
     {
         ProcessTxnResult rc = new ProcessTxnResult();
@@ -995,6 +1021,9 @@ public class DataTree {
         return rc;
     }
 
+    /**
+     * 杀死会话，即删除会话的暂时节点
+     */
     void killSession(long session, long zxid) {
         // the list is already removed from the ephemerals
         // so we do not have to worry about synchronizing on
@@ -1032,7 +1061,7 @@ public class DataTree {
 
     /**
      * this method gets the count of nodes and the bytes under a subtree
-     *
+     * 递归这个方法获得了一个子树下的节点数和字节数
      * @param path
      *            the path to be used
      * @param counts
@@ -1060,6 +1089,7 @@ public class DataTree {
 
     /**
      * update the quota for the given path
+     * 更新给定路径 quota state
      *
      * @param path
      *            the path to be used
@@ -1084,7 +1114,8 @@ public class DataTree {
 
     /**
      * this method traverses the quota path and update the path trie and sets
-     *
+     * 此方法遍历配额路径并更新路径线索并设置
+     * 
      * @param path
      */
     private void traverseNode(String path) {
@@ -1117,6 +1148,7 @@ public class DataTree {
 
     /**
      * this method sets up the path trie and sets up stats for quota nodes
+     * 将/zookeeper/quota节点下 stat 进行装配
      */
     private void setupQuota() {
         String quotaPath = Quotas.quotaZookeeper;
@@ -1130,7 +1162,7 @@ public class DataTree {
     /**
      * this method uses a stringbuilder to create a new path for children. This
      * is faster than string appends ( str1 + str2).
-     *
+     * 这个方法利用stringbuilder实现递归序列化节点
      * @param oa
      *            OutputArchive to write to.
      * @param path
@@ -1317,12 +1349,14 @@ public class DataTree {
         childWatches.removeWatcher(watcher);
     }
 
+    /**
+     * 根据节点的存在情况或者zxid，触发watcher或者添加watcher
+     */
     public void setWatches(long relativeZxid, List<String> dataWatches,
             List<String> existWatches, List<String> childWatches,
             Watcher watcher) {
         for (String path : dataWatches) {
             DataNode node = getNode(path);
-            WatchedEvent e = null;
             if (node == null) {
                 watcher.process(new WatchedEvent(EventType.NodeDeleted,
                             KeeperState.SyncConnected, path));

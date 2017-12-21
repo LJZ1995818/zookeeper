@@ -22,14 +22,15 @@ import org.apache.zookeeper.jmx.ZKMBeanInfo;
 
 /**
  * This class implements the data tree MBean.
+ * 这个类实现了datatree的MBean 用于JMX调用
  */
 public class DataTreeBean implements DataTreeMXBean, ZKMBeanInfo {
     DataTree dataTree;
-    
-    public DataTreeBean(org.apache.zookeeper.server.DataTree dataTree){
+
+    public DataTreeBean(org.apache.zookeeper.server.DataTree dataTree) {
         this.dataTree = dataTree;
     }
-    
+
     public int getNodeCount() {
         return dataTree.getNodeCount();
     }

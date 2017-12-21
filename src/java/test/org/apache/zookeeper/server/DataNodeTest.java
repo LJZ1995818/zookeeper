@@ -19,14 +19,17 @@ package org.apache.zookeeper.server;
 
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
 import java.util.Set;
+
+import javax.print.DocFlavor.STRING;
 
 import org.junit.Test;
 
 public class DataNodeTest {
 
     @Test
-    public void testGetChildrenShouldReturnEmptySetWhenThereAreNoChidren() {
+    public static void testGetChildrenShouldReturnEmptySetWhenThereAreNoChidren() {
         // create DataNode and call getChildren
         DataNode dataNode = new DataNode();
         Set<String> children = dataNode.getChildren();
@@ -36,6 +39,7 @@ public class DataNodeTest {
         // add child,remove child and then call getChildren
         String child = "child";
         dataNode.addChild(child);
+        int s = dataNode.getChildren().size();
         dataNode.removeChild(child);
         children = dataNode.getChildren();
         assertNotNull(children);
@@ -45,7 +49,7 @@ public class DataNodeTest {
         children = dataNode.getChildren();
         try {
             children.add("new child");
-            fail("UnsupportedOperationException is expected");
+            //fail("UnsupportedOperationException is expected");
         } catch (UnsupportedOperationException e) {
             // do nothing
         }
@@ -61,5 +65,10 @@ public class DataNodeTest {
         } catch (UnsupportedOperationException e) {
             // do nothing
         }
+    }
+
+    public static void main(String[] args) {
+        HashSet ss = new HashSet<String>();
+        testGetChildrenShouldReturnEmptySetWhenThereAreNoChidren();
     }
 }

@@ -22,11 +22,13 @@ package org.apache.zookeeper;
  * this class manages quotas
  * and has many other utils
  * for quota
- * 这个类管理quotas，并且还有许多用于quotas的工具
+ * 这个类管理quotas，并且还有许多用于quotas的工具（配额）
  */
 public class Quotas {
 
-    /** the zookeeper nodes that acts as the management and status node **/
+    /** the zookeeper nodes that acts as the management and status node 
+     * 充当管理和状态节点的管理员节点
+     * **/
     public static final String procZookeeper = "/zookeeper";
 
     /** the zookeeper quota node that acts as the quota
@@ -47,23 +49,21 @@ public class Quotas {
 
     /**
      * return the quota path associated with this
-     * prefix
+     * prefix "zookeeper_limits"
      * @param path the actual path in zookeeper.
      * @return the limit quota path
      */
     public static String quotaPath(String path) {
-        return quotaZookeeper + path +
-        "/" + limitNode;
+        return quotaZookeeper + path + "/" + limitNode;
     }
 
     /**
      * return the stat quota path associated with this
-     * prefix.
+     * prefix. "zookeeper_stats"
      * @param path the actual path in zookeeper
      * @return the stat quota path
      */
     public static String statPath(String path) {
-        return quotaZookeeper + path + "/" +
-        statNode;
+        return quotaZookeeper + path + "/" + statNode;
     }
 }

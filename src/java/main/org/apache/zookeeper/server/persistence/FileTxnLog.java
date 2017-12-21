@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class implements the TxnLog interface. It provides api's
  * to access the txnlogs and add entries to it.
+ * 这个类实现了TxnLog接口，他提供了控制txnlogs和给它添加实体的api接口
  * <p>
  * The format of a Transactional log is as follows:
  * <blockquote><pre>
@@ -97,7 +98,7 @@ public class FileTxnLog implements TxnLog {
 
     public final static int VERSION = 2;
 
-    /** Maximum time we allow for elapsed fsync before WARNing */
+    /** 在警告之前, 我们允许经过 fsync 的最长时间 */
     private final static long fsyncWarningThresholdMS;
 
     static {
@@ -119,10 +120,13 @@ public class FileTxnLog implements TxnLog {
     }
 
     long lastZxidSeen;
+    /**
+     * 对事务日志进行写入的stream
+     */
     volatile BufferedOutputStream logStream = null;
     volatile OutputArchive oa;
     volatile FileOutputStream fos = null;
-
+    
     File logDir;
     private final boolean forceSync = !System.getProperty("zookeeper.forceSync", "yes").equals("no");
     long dbId;
@@ -187,6 +191,7 @@ public class FileTxnLog implements TxnLog {
 
     /**
      * append an entry to the transaction log
+     * 添加一个实体到一个日志文件
      * @param hdr the header of the transaction
      * @param txn the transaction part of the entry
      * returns true iff something appended, otw false
@@ -215,9 +220,11 @@ public class FileTxnLog implements TxnLog {
            fos = new FileOutputStream(logFileWrite);
            logStream=new BufferedOutputStream(fos);
            oa = BinaryOutputArchive.getArchive(logStream);
+           // 先写入文件头，用于检验文件信息
            FileHeader fhdr = new FileHeader(TXNLOG_MAGIC,VERSION, dbId);
            fhdr.serialize(oa, "fileheader");
            // Make sure that the magic number is written before padding.
+           // 确保在填充前写入 magic 数
            logStream.flush();
            currentSize = fos.getChannel().position();
            streamsToFlush.add(fos);
@@ -228,16 +235,17 @@ public class FileTxnLog implements TxnLog {
             throw new IOException("Faulty serialization for header " +
                     "and txn");
         }
+        // 计算crc编码 用于校验内容是否被修改  先写入crc32码，再写入事务日志
         Checksum crc = makeChecksumAlgorithm();
         crc.update(buf, 0, buf.length);
-        oa.writeLong(crc.getValue(), "txnEntryCRC");
+        oa.writeLong(crc.getValue(), "crcvalue");
         Util.writeTxnBytes(oa, buf);
 
         return true;
     }
 
     /**
-     * pad the current file to increase its size
+     * 填充当前文件已增加其大小
      * @param out the outputstream to be padded
      * @throws IOException
      */
@@ -249,6 +257,9 @@ public class FileTxnLog implements TxnLog {
      * Find the log file that starts at, or just before, the snapshot. Return
      * this and all subsequent logs. Results are ordered by zxid of file,
      * ascending order.
+     * 查找从快照开始的日志文件, 或者只是在之前。
+     * 返回此和所有后续日志。结果按文件 zxid 排序,升序排列。
+     * 
      * @param logDirList array of files
      * @param snapshotZxid return files at, or before this zxid
      * @return
@@ -283,15 +294,16 @@ public class FileTxnLog implements TxnLog {
 
     /**
      * get the last zxid that was logged in the transaction logs
+     * 获取最新的事务日志的 zxid
      * @return the last zxid logged in the transaction logs
      */
     public long getLastLoggedZxid() {
         File[] files = getLogFiles(logDir.listFiles(), 0);
-        long maxLog=files.length>0?
+        long maxLog=files.length>0?// 最大的日志文件ID
                 Util.getZxidFromName(files[files.length-1].getName(),"log"):-1;
 
-        // if a log file is more recent we must scan it to find
-        // the highest zxid
+        // 文件的id 和 事务的id 是不一致的
+        //如果一个日志文件是最新的, 我们必须扫描它找到最高的 zxid
         long zxid = maxLog;
         TxnIterator itr = null;
         try {
@@ -322,8 +334,8 @@ public class FileTxnLog implements TxnLog {
     }
 
     /**
-     * commit the logs. make sure that everything hits the
-     * disk
+     * commit the logs. make sure that everything hits the disk
+     * 提交日志，确认所有的事情都持久化到磁盘
      */
     public synchronized void commit() throws IOException {
         if (logStream != null) {
@@ -361,6 +373,7 @@ public class FileTxnLog implements TxnLog {
 
     /**
      * start reading all the transactions from the given zxid
+     * 从给定的zxid 事务日志文件  获取 事务日志迭代器
      * @param zxid the zxid to start reading transactions from
      * @return returns an iterator to iterate through the transaction
      * logs
@@ -371,7 +384,7 @@ public class FileTxnLog implements TxnLog {
 
     /**
      * start reading all the transactions from the given zxid.
-     *
+     * 从给定的zxid 事务日志文件  获取 事务日志迭代器
      * @param zxid the zxid to start reading transactions from
      * @param fastForward true if the iterator should be fast forwarded to point
      *        to the txn of a given zxid, else the iterator will point to the
@@ -384,6 +397,7 @@ public class FileTxnLog implements TxnLog {
 
     /**
      * truncate the current transaction logs
+     * 截断当前事务日志
      * @param zxid the zxid to truncate the logs to
      * @return true if successful false if not
      */
@@ -391,7 +405,7 @@ public class FileTxnLog implements TxnLog {
         FileTxnIterator itr = null;
         try {
             itr = new FileTxnIterator(this.logDir, zxid);
-            PositionInputStream input = itr.inputStream;
+            PositionInputStream input = itr.inputStream;// 根据zxid获事务日志在文件中的偏移量
             if(input == null) {
                 throw new IOException("No log files found to truncate! This could " +
                         "happen if you still have snapshots from an old setup or " +
@@ -402,7 +416,7 @@ public class FileTxnLog implements TxnLog {
             RandomAccessFile raf=new RandomAccessFile(itr.logFile,"rw");
             raf.setLength(pos);
             raf.close();
-            while(itr.goToNextLog()) {
+            while(itr.goToNextLog()) {// 将剩余的log文件都删除
                 if (!itr.logFile.delete()) {
                     LOG.warn("Unable to truncate {}", itr.logFile);
                 }
@@ -415,6 +429,7 @@ public class FileTxnLog implements TxnLog {
 
     /**
      * read the header of the transaction file
+     * 读取事务日志的文件头
      * @param file the transaction file to read
      * @return header that was read from the file
      * @throws IOException
@@ -463,6 +478,9 @@ public class FileTxnLog implements TxnLog {
      * that has been consumed by the applications. It can
      * wrap buffered input streams to provide the right offset
      * for the application.
+     * 保持跟踪位置的类在输入流中。要偏移的位置点
+     * 已被应用程序占用。它可以包装缓冲的输入流以提供正确的偏移量申请。
+     * 用于截取日志文件
      */
     static class PositionInputStream extends FilterInputStream {
         long position;
@@ -528,6 +546,7 @@ public class FileTxnLog implements TxnLog {
     /**
      * this class implements the txnlog iterator interface
      * which is used for reading the transaction logs
+     * 这个类实现了用于读取事务日志的  txnlog 迭代器接口
      */
     public static class FileTxnIterator implements TxnLog.TxnIterator {
         File logDir;
@@ -545,9 +564,11 @@ public class FileTxnLog implements TxnLog {
 
         /**
          * create an iterator over a transaction database directory
+         * 在事务数据库目录上创建一个迭代器
          * @param logDir the transaction database directory
          * @param zxid the zxid to start reading from
-         * @param fastForward   true if the iterator should be fast forwarded to
+         * @param fastForward
+         *        true if the iterator should be fast forwarded to
          *        point to the txn of a given zxid, else the iterator will
          *        point to the starting txn of a txnlog that may contain txn of
          *        a given zxid
@@ -560,7 +581,7 @@ public class FileTxnLog implements TxnLog {
             init();
 
             if (fastForward && hdr != null) {
-                while (hdr.getZxid() < zxid) {
+                while (hdr.getZxid() < zxid) {// 循环读取 事务日志 直达到达直达的zxid
                     if (!next())
                         break;
                 }
@@ -580,16 +601,17 @@ public class FileTxnLog implements TxnLog {
         /**
          * initialize to the zxid specified
          * this is inclusive of the zxid
+         * 初始化指定的zxid 的 事务实体
          * @throws IOException
          */
         void init() throws IOException {
             storedFiles = new ArrayList<File>();
             List<File> files = Util.sortDataDir(FileTxnLog.getLogFiles(logDir.listFiles(), 0), "log", false);
-            for (File f: files) {
+            for (File f: files) {// namezxid > zxid - 1 的所有文件
                 if (Util.getZxidFromName(f.getName(), "log") >= zxid) {
                     storedFiles.add(f);
                 }
-                // add the last logfile that is less than the zxid
+                // 添加少于 zxid 的最后一个日志文件
                 else if (Util.getZxidFromName(f.getName(), "log") < zxid) {
                     storedFiles.add(f);
                     break;
@@ -612,8 +634,8 @@ public class FileTxnLog implements TxnLog {
 
         /**
          * go to the next logfile
-         * @return true if there is one and false if there is no
-         * new file to be read
+         * 获取下一个日志文件
+         * @return 如果有则返回true，否则返回false
          * @throws IOException
          */
         private boolean goToNextLog() throws IOException {
@@ -627,6 +649,7 @@ public class FileTxnLog implements TxnLog {
 
         /**
          * read the header from the inputarchive
+         * 验证文件首部是否是  ZKLG  的二进制
          * @param ia the inputarchive to be read from
          * @param is the inputstream
          * @throws IOException
@@ -644,8 +667,8 @@ public class FileTxnLog implements TxnLog {
 
         /**
          * Invoked to indicate that the input stream has been created.
-         * @param ia input archive
-         * @param is file input stream associated with the input archive.
+         * 调用日志文件以表明已创建输入流。
+         * @param logFile 创建流的日志文件
          * @throws IOException
          **/
         protected InputArchive createInputArchive(File logFile) throws IOException {
@@ -697,12 +720,11 @@ public class FileTxnLog implements TxnLog {
                 inputStream = null;
                 ia = null;
                 hdr = null;
-                // this means that the file has ended
-                // we should go to the next file
+                // 这个表示文件已经到达结尾了，我们应该到跳到下一个文件
                 if (!goToNextLog()) {
                     return false;
                 }
-                // if we went to the next log file, we should call next() again
+                // 如果我们去下一个文件，我们应该再次调用next()
                 return next();
             } catch (IOException e) {
                 inputStream.close();

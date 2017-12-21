@@ -49,23 +49,28 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.List;
+import java.util.Set;
 import java.util.ArrayList;
 
 public class DataTreeTest extends ZKTestCase {
     protected static final Logger LOG = LoggerFactory.getLogger(DataTreeTest.class);
 
-    private DataTree dt;
+    private static DataTree dt;
 
     @Before
-    public void setUp() throws Exception {
+    public static void setUp() throws Exception {
         dt=new DataTree();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public static void tearDown() throws Exception {
         dt=null;
     }
 
+    public static void main(String[] args) throws Exception {
+        setUp();
+        testPathTrieClearOnDeserialize();
+    }
     /**
      * For ZOOKEEPER-1755 - Test race condition when taking dumpEphemerals and
      * removing the session related ephemerals from DataTree structure
@@ -154,7 +159,7 @@ public class DataTreeTest extends ZKTestCase {
     }
 
     @Test(timeout = 60000)
-    public void testPathTrieClearOnDeserialize() throws Exception {
+    public static void testPathTrieClearOnDeserialize() throws Exception {
 
         //Create a DataTree with quota nodes so PathTrie get updated
         DataTree dserTree = new DataTree();

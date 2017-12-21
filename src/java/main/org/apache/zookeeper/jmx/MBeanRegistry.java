@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * zookeeper MBeans with the platform MBean server. It builds a hierarchy of MBeans
  * where each MBean represented by a filesystem-like path. Eventually, this hierarchy
  * will be stored in the zookeeper data tree instance as a virtual data tree.
+ * 此类提供了一个统一的接口, 用于注册/注销 zookeeper mbean 与平台 MBean 服务器。
  */
 public class MBeanRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(MBeanRegistry.class);
@@ -66,6 +67,8 @@ public class MBeanRegistry {
     }
 
     public MBeanRegistry () {
+        //ManagementFactory. getPlatformMBeanServer () 返回对 JVM 中现有 MBean 服务器的引用。JConsole 查看服务器上的 bean。
+        //如果使用 createMBeanServer (), 将创建一个全新的服务器。JConsole 不知道它, 所以不会看到它注册的 bean。
         try {
             mBeanServer = ManagementFactory.getPlatformMBeanServer();        
         } catch (Error e) {
@@ -160,6 +163,7 @@ public class MBeanRegistry {
 
     /**
      * Generate a filesystem-like path.
+     * 构造一个像文件系统一样的路径
      * @param prefix path prefix
      * @param name path elements
      * @return absolute path
@@ -198,6 +202,7 @@ public class MBeanRegistry {
     }
     /**
      * Builds an MBean path and creates an ObjectName instance using the path. 
+     * 构建一个MBean路径并且创建一个ObjectName实例
      * @param path MBean path
      * @param bean the MBean instance
      * @return ObjectName to be registered with the platform MBean server

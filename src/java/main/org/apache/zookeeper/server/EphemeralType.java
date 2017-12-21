@@ -20,7 +20,9 @@ package org.apache.zookeeper.server;
 
 import org.apache.zookeeper.CreateMode;
 
-
+/**
+ * 节点的存储类型 包括 持久性节点、短暂节点（标准节点）、容器节点、TTL
+ */
 public enum EphemeralType {
     /**
      * Not ephemeral

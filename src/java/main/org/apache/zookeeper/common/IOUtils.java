@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 /*
  * This code is originally from HDFS, see the similarly named files there
  * in case of bug fixing, history, etc...
+ * 此代码最初来自 HDFS, 请参阅类似命名的文件
+ * 如有错误修正, 历史等。
  */
 
 public class IOUtils {
@@ -45,6 +47,8 @@ public class IOUtils {
     /**
      * Close the Closeable objects and <b>ignore</b> any {@link IOException} or
      * null pointers. Must only be used for cleanup in exception handlers.
+     * 关闭Closeable对象并忽略任何一个IOException或者空指针。
+     * 必须仅用于异常处理程序中的清理。
      * 
      * @param log
      *            the log to record problems to at debug level. Can be null.
@@ -75,6 +79,7 @@ public class IOUtils {
      * @param buffSize
      *            the size of the buffer
      * @param close
+     *            复制完之后，是否关闭stream
      *            whether or not close the InputStream and OutputStream at the
      *            end. The streams are closed in the finally clause.
      */
@@ -98,13 +103,14 @@ public class IOUtils {
 
     /**
      * Copies from one stream to another.
+     * 将一个stream反正到另一个stream
      * 
      * @param in
      *            InputStrem to read from
      * @param out
      *            OutputStream to write to
      * @param buffSize
-     *            the size of the buffer
+     *            缓存区大小
      */
     public static void copyBytes(InputStream in, OutputStream out, int buffSize)
             throws IOException {
