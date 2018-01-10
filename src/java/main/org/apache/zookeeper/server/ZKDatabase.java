@@ -72,8 +72,7 @@ public class ZKDatabase {
     private static final Logger LOG = LoggerFactory.getLogger(ZKDatabase.class);
 
     /**
-     * make sure on a clear you take care of
-     * all these members.
+     * make sure on a clear you take care of all these members.
      */
     protected DataTree dataTree;
     protected ConcurrentHashMap<Long, Integer> sessionsWithTimeouts;
@@ -97,6 +96,7 @@ public class ZKDatabase {
      * the filetxnsnaplog that this zk database
      * maps to. There is a one to one relationship
      * between a filetxnsnaplog and zkdatabase.
+     * 有一对一关系在 filetxnsnaplog 和 zkdatabase 之间
      * @param snapLog the FileTxnSnapLog mapping this zkdatabase
      */
     public ZKDatabase(FileTxnSnapLog snapLog) {
@@ -123,8 +123,7 @@ public class ZKDatabase {
     }
 
     /**
-     * checks to see if the zk database has been
-     * initialized or not.
+     * 检查zk database 是否已经初始化
      * @return true if zk database is initialized and false if not
      */
     public boolean isInitialized() {
@@ -132,7 +131,7 @@ public class ZKDatabase {
     }
 
     /**
-     * clear the zkdatabase.
+     * clear the zkdatabase. 清除zk 数据库 中所有的数据
      * Note to developers - be careful to see that
      * the clear method does clear out all the
      * data structures in zkdatabase.
@@ -140,8 +139,8 @@ public class ZKDatabase {
     public void clear() {
         minCommittedLog = 0;
         maxCommittedLog = 0;
-        /* to be safe we just create a new
-         * datatree.
+        /*
+         * 为了安全我们直接创建一个新的datatree
          */
         dataTree = new DataTree();
         sessionsWithTimeouts.clear();
@@ -164,7 +163,7 @@ public class ZKDatabase {
     }
 
     /**
-     * the committed log for this zk database
+     * 内存中可用的最大提交事务日志,在committedLog中保存的最新的事务日志的zxid
      * @return the committed log for this zkdatabase
      */
     public long getmaxCommittedLog() {
@@ -173,8 +172,7 @@ public class ZKDatabase {
 
 
     /**
-     * the minimum committed transaction log
-     * available in memory
+     * 内存中可用的最小提交事务日志,在committedLog中保存的最久的事务日志的zxid
      * @return the minimum committed transaction
      * log available in memory
      */
@@ -182,6 +180,7 @@ public class ZKDatabase {
         return minCommittedLog;
     }
     /**
+     * 获取控制committedLogd的锁
      * Get the lock that controls the committedLog. If you want to get the pointer to the committedLog, you need
      * to use this lock to acquire a read lock before calling getCommittedLog()
      * @return the lock that controls the committed log
@@ -194,6 +193,7 @@ public class ZKDatabase {
     public synchronized List<Proposal> getCommittedLog() {
         ReadLock rl = logLock.readLock();
         // only make a copy if this thread isn't already holding a lock
+        // 仅当该线程尚未持有锁时才制作副本
         if(logLock.getReadHoldCount() <=0) {
             try {
                 rl.lock();
@@ -207,6 +207,7 @@ public class ZKDatabase {
 
     /**
      * get the last processed zxid from a datatree
+     * 从datatree中获取最新的执行zxid
      * @return the last processed zxid of a datatree
      */
     public long getDataTreeLastProcessedZxid() {
@@ -233,6 +234,7 @@ public class ZKDatabase {
     /**
      * load the database from the disk onto memory and also add
      * the transactions to the committedlog in memory.
+     * 将数据库从磁盘加载到内存中, 还将事务添加到内存中的 committedlog。
      * @return the last valid zxid on disk
      * @throws IOException
      */
@@ -253,10 +255,12 @@ public class ZKDatabase {
      * maintains a list of last <i>committedLog</i>
      *  or so committed requests. This is used for
      * fast follower synchronization.
+     * 维护上一个 <i> committedLog </i> 的列表
+     * 或如此承诺的请求。这是用于快速追随者同步。
      * @param request committed request
      */
     public void addCommittedProposal(Request request) {
-        WriteLock wl = logLock.writeLock();
+        WriteLock wl = logLock.writeLock();// 获取对commitedLog的写锁
         try {
             wl.lock();
             if (committedLog.size() > commitLogCount) {
@@ -302,6 +306,9 @@ public class ZKDatabase {
         return enabled;
     }
 
+    /**
+     * 计算事务日志的大小限制
+     */
     public long calculateTxnLogSizeLimit() {
         long snapSize = 0;
         try {
@@ -314,7 +321,8 @@ public class ZKDatabase {
 
     /**
      * Get proposals from txnlog. Only packet part of proposal is populated.
-     *
+     * 从 txnlog 得到proposals。只填充proposals的数据包部分。
+     * 
      * @param startZxid the starting zxid of the proposal
      * @param sizeLimit maximum on-disk size of txnlog to fetch
      *                  0 is unlimited, negative value means disable.
@@ -334,6 +342,7 @@ public class ZKDatabase {
 
             // If we cannot guarantee that this is strictly the starting txn
             // after a given zxid, we should fail.
+            // 如果我们不能保证：在给定的zxid之后，严格启动txn的话，我们应该是失败的
             if ((itr.getHeader() != null)
                     && (itr.getHeader().getZxid() > startZxid)) {
                 LOG.warn("Unable to find proposals from txnlog for zxid: "
@@ -344,7 +353,7 @@ public class ZKDatabase {
 
             if (sizeLimit > 0) {
                 long txnSize = itr.getStorageSize();
-                if (txnSize > sizeLimit) {
+                if (txnSize > sizeLimit) {// 超过限定的大小
                     LOG.info("Txnlog size: " + txnSize + " exceeds sizeLimit: "
                             + sizeLimit);
                     itr.close();
@@ -406,7 +415,7 @@ public class ZKDatabase {
     }
 
     /**
-     * the paths for  ephemeral session id
+     * 根据sessionID 获取 暂时性节点路径
      * @param sessionId the session id for which paths match to
      * @return the paths for a session id
      */
@@ -461,8 +470,7 @@ public class ZKDatabase {
      * @return
      * @throws KeeperException.NoNodeException
      */
-    public byte[] getData(String path, Stat stat, Watcher watcher)
-    throws KeeperException.NoNodeException {
+    public byte[] getData(String path, Stat stat, Watcher watcher) throws KeeperException.NoNodeException {
         return dataTree.getData(path, stat, watcher);
     }
 
@@ -522,6 +530,7 @@ public class ZKDatabase {
 
     /**
      * Truncate the ZKDatabase to the specified zxid
+     * 截断数据库到ZKDatabase到给定的zxid
      * @param zxid the zxid to truncate zk database to
      * @return true if the truncate is successful and false if not
      * @throws IOException

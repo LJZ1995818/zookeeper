@@ -31,6 +31,9 @@ public class RateLogger {
     private long timestamp;
     private int count = 0;
 
+    /**
+     * 清空当前时间区间的 日志信息  并打印此日志出现的次数
+     */
     public void flush() {
         if (msg != null) {
             if (count > 1) {

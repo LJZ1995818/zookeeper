@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,14 +43,14 @@ import org.slf4j.LoggerFactory;
  */
 public class MBeanRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(MBeanRegistry.class);
-    
+
     private static volatile MBeanRegistry instance = new MBeanRegistry();
-    
+
     private final Object LOCK = new Object();
-    
+
     private Map<ZKMBeanInfo, String> mapBean2Path =
-        new ConcurrentHashMap<ZKMBeanInfo, String>();
-    
+            new ConcurrentHashMap<ZKMBeanInfo, String>();
+
     private MBeanServer mBeanServer;
 
     /**
@@ -66,15 +66,15 @@ public class MBeanRegistry {
         return instance;
     }
 
-    public MBeanRegistry () {
+    public MBeanRegistry() {
         //ManagementFactory. getPlatformMBeanServer () 返回对 JVM 中现有 MBean 服务器的引用。JConsole 查看服务器上的 bean。
         //如果使用 createMBeanServer (), 将创建一个全新的服务器。JConsole 不知道它, 所以不会看到它注册的 bean。
         try {
-            mBeanServer = ManagementFactory.getPlatformMBeanServer();        
+            mBeanServer = ManagementFactory.getPlatformMBeanServer();
         } catch (Error e) {
             // Account for running within IKVM and create a new MBeanServer
             // if the PlatformMBeanServer does not exist.
-            mBeanServer =  MBeanServerFactory.createMBeanServer();
+            mBeanServer = MBeanServerFactory.createMBeanServer();
         }
     }
 
@@ -94,8 +94,7 @@ public class MBeanRegistry {
      * node of this parent.
      */
     public void register(ZKMBeanInfo bean, ZKMBeanInfo parent)
-        throws JMException
-    {
+            throws JMException {
         assert bean != null;
         String path = null;
         if (parent != null) {
@@ -103,7 +102,7 @@ public class MBeanRegistry {
             assert path != null;
         }
         path = makeFullPath(path, parent);
-        if(bean.isHidden())
+        if (bean.isHidden())
             return;
         ObjectName oname = makeObjectName(path, bean);
         try {
@@ -122,8 +121,8 @@ public class MBeanRegistry {
      * @param path
      * @param bean
      */
-    private void unregister(String path,ZKMBeanInfo bean) throws JMException  {
-        if(path==null)
+    private void unregister(String path, ZKMBeanInfo bean) throws JMException {
+        if (path == null)
             return;
         if (!bean.isHidden()) {
             final ObjectName objName = makeObjectName(path, bean);
@@ -131,11 +130,11 @@ public class MBeanRegistry {
                 LOG.info("Unregister MBean [{}]", objName);
             }
             synchronized (LOCK) {
-               mBeanServer.unregisterMBean(objName);
+                mBeanServer.unregisterMBean(objName);
             }
-        }        
+        }
     }
-    
+
     /**
      * @return a {@link Collection} with the {@link ZKMBeanInfo} instances not
      *         unregistered. Mainly for testing purposes.
@@ -149,11 +148,11 @@ public class MBeanRegistry {
      * @param bean
      */
     public void unregister(ZKMBeanInfo bean) {
-        if(bean==null)
+        if (bean == null)
             return;
         String path = mapBean2Path.remove(bean);
         try {
-            unregister(path,bean);
+            unregister(path, bean);
         } catch (JMException e) {
             LOG.warn("Error during unregister of [{}]", bean.getName(), e);
         } catch (Throwable t) {
@@ -169,19 +168,19 @@ public class MBeanRegistry {
      * @return absolute path
      */
     public String makeFullPath(String prefix, String... name) {
-        StringBuilder sb=new StringBuilder(prefix == null ? "/" : (prefix.equals("/")?prefix:prefix+"/"));
-        boolean first=true;
+        StringBuilder sb = new StringBuilder(prefix == null ? "/" : (prefix.equals("/") ? prefix : prefix + "/"));
+        boolean first = true;
         for (String s : name) {
-            if(s==null) continue;
-            if(!first){
+            if (s == null) continue;
+            if (!first) {
                 sb.append("/");
-            }else
-                first=false;
+            } else
+                first = false;
             sb.append(s);
         }
         return sb.toString();
     }
-    
+
     protected String makeFullPath(String prefix, ZKMBeanInfo bean) {
         return makeFullPath(prefix, bean == null ? null : bean.getName());
     }
@@ -189,34 +188,36 @@ public class MBeanRegistry {
     /**
      * This takes a path, such as /a/b/c, and converts it to 
      * name0=a,name1=b,name2=c
+     * 将路径格式转化为MBean的标准格式
      */
-    private int tokenize(StringBuilder sb, String path, int index){
+    private int tokenize(StringBuilder sb, String path, int index) {
         String[] tokens = path.split("/");
-        for (String s: tokens) {
-            if (s.length()==0)
+        for (String s : tokens) {
+            if (s.length() == 0)
                 continue;
             sb.append("name").append(index++)
                     .append("=").append(s).append(",");
         }
         return index;
     }
+
     /**
      * Builds an MBean path and creates an ObjectName instance using the path. 
      * 构建一个MBean路径并且创建一个ObjectName实例
      * @param path MBean path
      * @param bean the MBean instance
      * @return ObjectName to be registered with the platform MBean server
+     * 被用于在平台MBean服务器注册的ObjectName
      */
     protected ObjectName makeObjectName(String path, ZKMBeanInfo bean)
-        throws MalformedObjectNameException
-    {
-        if(path==null)
+            throws MalformedObjectNameException {
+        if (path == null)
             return null;
         StringBuilder beanName = new StringBuilder(CommonNames.DOMAIN + ":");
-        int counter=0;
-        counter=tokenize(beanName,path,counter);
-        tokenize(beanName,bean.getName(),counter);
-        beanName.deleteCharAt(beanName.length()-1);
+        int counter = 0;
+        counter = tokenize(beanName, path, counter);
+        tokenize(beanName, bean.getName(), counter);
+        beanName.deleteCharAt(beanName.length() - 1);
         try {
             return new ObjectName(beanName.toString());
         } catch (MalformedObjectNameException e) {

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,12 +42,13 @@ import org.slf4j.LoggerFactory;
 @InterfaceAudience.Public
 public class ZooKeeperServerMain {
     private static final Logger LOG =
-        LoggerFactory.getLogger(ZooKeeperServerMain.class);
+            LoggerFactory.getLogger(ZooKeeperServerMain.class);
 
     private static final String USAGE =
-        "Usage: ZooKeeperServerMain configfile | port datadir [ticktime] [maxcnxns]";
+            "Usage: ZooKeeperServerMain configfile | port datadir [ticktime] [maxcnxns]";
 
     // ZooKeeper server supports two kinds of connection: unencrypted and encrypted.
+    // zookeeper 服务器支持两种连接：不加密和加密
     private ServerCnxnFactory cnxnFactory;
     private ServerCnxnFactory secureCnxnFactory;
     private ContainerManager containerManager;
@@ -55,7 +56,7 @@ public class ZooKeeperServerMain {
     private AdminServer adminServer;
 
     /*
-     * Start up the ZooKeeper server.
+     * 启动zookeeper单例模式下的服务
      *
      * @param args the configfile or the port datadir [ticktime]
      */
@@ -89,8 +90,7 @@ public class ZooKeeperServerMain {
     }
 
     protected void initializeAndRun(String[] args)
-        throws ConfigException, IOException, AdminServerException
-    {
+            throws ConfigException, IOException, AdminServerException {
         try {
             ManagedUtil.registerLog4jMBeans();
         } catch (JMException e) {
@@ -108,7 +108,7 @@ public class ZooKeeperServerMain {
     }
 
     /**
-     * Run from a ServerConfig.
+     * 从给定的服务器配置文件启动
      * @param config ServerConfig to use.
      * @throws IOException
      * @throws AdminServerException

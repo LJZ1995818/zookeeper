@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,28 +46,30 @@ import org.slf4j.LoggerFactory;
  * NIOServerCnxnFactory implements a multi-threaded ServerCnxnFactory using
  * NIO non-blocking socket calls. Communication between threads is handled via
  * queues.
- *
- *   - 1   accept thread, which accepts new connections and assigns to a
- *         selector thread
- *   - 1-N selector threads, each of which selects on 1/N of the connections.
- *         The reason the factory supports more than one selector thread is that
- *         with large numbers of connections, select() itself can become a
- *         performance bottleneck.
- *   - 0-M socket I/O worker threads, which perform basic socket reads and
- *         writes. If configured with 0 worker threads, the selector threads
- *         do the socket I/O directly.
- *   - 1   connection expiration thread, which closes idle connections; this is
- *         necessary to expire connections on which no session is established.
- *
+ * <p>
+ * - 1   accept thread, which accepts new connections and assigns to a
+ * selector thread
+ * - 1-N selector threads, each of which selects on 1/N of the connections.
+ * The reason the factory supports more than one selector thread is that
+ * with large numbers of connections, select() itself can become a
+ * performance bottleneck.
+ * - 0-M socket I/O worker threads, which perform basic socket reads and
+ * writes. If configured with 0 worker threads, the selector threads
+ * do the socket I/O directly.
+ * - 1   connection expiration thread, which closes idle connections; this is
+ * necessary to expire connections on which no session is established.
+ * <p>
  * Typical (default) thread counts are: on a 32 core machine, 1 accept thread,
  * 1 connection expiration thread, 4 selector threads, and 64 worker threads.
  */
 public class NIOServerCnxnFactory extends ServerCnxnFactory {
     private static final Logger LOG = LoggerFactory.getLogger(NIOServerCnxnFactory.class);
 
-    /** Default sessionless connection timeout in ms: 10000 (10s) */
+    /**
+     * Default sessionless connection timeout in ms: 10000 (10s)
+     */
     public static final String ZOOKEEPER_NIO_SESSIONLESS_CNXN_TIMEOUT =
-        "zookeeper.nio.sessionlessCnxnTimeout";
+            "zookeeper.nio.sessionlessCnxnTimeout";
     /**
      * With 500 connections to an observer with watchers firing on each, is
      * unable to exceed 1GigE rates with only 1 selector.
@@ -75,31 +77,42 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
      * Expressed as sqrt(numCores/2). Must have at least 1 selector thread.
      */
     public static final String ZOOKEEPER_NIO_NUM_SELECTOR_THREADS =
-        "zookeeper.nio.numSelectorThreads";
-    /** Default: 2 * numCores */
+            "zookeeper.nio.numSelectorThreads";
+    /**
+     * Default: 2 * numCores
+     */
     public static final String ZOOKEEPER_NIO_NUM_WORKER_THREADS =
-        "zookeeper.nio.numWorkerThreads";
-    /** Default: 64kB */
+            "zookeeper.nio.numWorkerThreads";
+    /**
+     * Default: 64kB
+     */
     public static final String ZOOKEEPER_NIO_DIRECT_BUFFER_BYTES =
-        "zookeeper.nio.directBufferBytes";
-    /** Default worker pool shutdown timeout in ms: 5000 (5s) */
+            "zookeeper.nio.directBufferBytes";
+    /**
+     * Default worker pool shutdown timeout in ms: 5000 (5s)
+     */
     public static final String ZOOKEEPER_NIO_SHUTDOWN_TIMEOUT =
-        "zookeeper.nio.shutdownTimeout";
+            "zookeeper.nio.shutdownTimeout";
 
     static {
+        /**
+         * 设置当前线程的异常处理器
+         */
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-                public void uncaughtException(Thread t, Throwable e) {
-                    LOG.error("Thread " + t + " died", e);
-                }
-            });
+            public void uncaughtException(Thread t, Throwable e) {// 打印异常
+                LOG.error("Thread " + t + " died", e);
+            }
+        });
         /**
          * this is to avoid the jvm bug:
          * NullPointerException in Selector.open()
+         * 这个是为了避免jvm异常：
+         * Selector.open()中的空指针异常
          * http://bugs.sun.com/view_bug.do?bug_id=6427854
          */
         try {
             Selector.open().close();
-        } catch(IOException ie) {
+        } catch (IOException ie) {
             LOG.error("Selector failed to open", ie);
         }
 
@@ -107,23 +120,25 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
          * Value of 0 disables use of direct buffers and instead uses
          * gathered write call.
          *
-         * Default to using 64k direct buffers.
+         * 默认使用 64kb的直接内存
          */
         directBufferBytes = Integer.getInteger(
-            ZOOKEEPER_NIO_DIRECT_BUFFER_BYTES, 64 * 1024);
+                ZOOKEEPER_NIO_DIRECT_BUFFER_BYTES, 64 * 1024);
     }
 
     /**
      * AbstractSelectThread is an abstract base class containing a few bits
      * of code shared by the AcceptThread (which selects on the listen socket)
      * and SelectorThread (which selects on client connections) classes.
+     * AbstractSelectThread是一个抽象基类，包含由ReceiveThread共享的一些代码位
+     * （它选择在侦听套接字)和SelectorThread（在客户机连接上选择）类。
      */
     private abstract class AbstractSelectThread extends ZooKeeperThread {
         protected final Selector selector;
 
         public AbstractSelectThread(String name) throws IOException {
             super(name);
-            // Allows the JVM to shutdown even if this thread is still running.
+            // 即使该线程仍在运行，也允许JVM关闭。
             setDaemon(true);
             this.selector = Selector.open();
         }
@@ -133,9 +148,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
         }
 
         /**
-         * Close the selector. This should be called when the thread is about to
-         * exit and no operation is going to be performed on the Selector or
-         * SelectionKey
+         * 关闭选择器。当线程即将退出且在选择器或选择键上不执行任何操作时，应调用此函数
          */
         protected void closeSelector() {
             try {
@@ -146,6 +159,11 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
             }
         }
 
+        /**
+         * 清除无效的key
+         *
+         * @param key
+         */
         protected void cleanupSelectionKey(SelectionKey key) {
             if (key != null) {
                 try {
@@ -158,14 +176,19 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
             }
         }
 
+        /**
+         * 快速关闭socket通道
+         *
+         * @param sc
+         */
         protected void fastCloseSock(SocketChannel sc) {
             if (sc != null) {
                 try {
-                    // Hard close immediately, discarding buffers
+                    // 强制立刻关闭，丢弃缓冲区
                     sc.socket().setSoLinger(true, 0);
                 } catch (SocketException e) {
                     LOG.warn("Unable to set socket linger to 0, socket close"
-                             + " may stall in CLOSE_WAIT", e);
+                            + " may stall in CLOSE_WAIT", e);
                 }
                 NIOServerCnxn.closeSock(sc);
             }
@@ -178,6 +201,9 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
      * them across the SelectorThreads. It enforces maximum number of
      * connections per IP and attempts to cope with running out of file
      * descriptors by briefly sleeping before retrying.
+     * 有一个单独的接受Thread，它接受新的连接，并使用一个简单的循环方案将它们分配给SelectorThread，
+     * 从而将它们分散到SelectorThread中。
+     * 它强制使用最大数目的每个IP的连接，并尝试通过在重试之前短暂休眠来解决文件描述符不足的问题。
      */
     private class AcceptThread extends AbstractSelectThread {
         private final ServerSocketChannel acceptSocket;
@@ -186,15 +212,14 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
         private final Collection<SelectorThread> selectorThreads;
         private Iterator<SelectorThread> selectorIterator;
         private volatile boolean reconfiguring = false;
-        
+
         public AcceptThread(ServerSocketChannel ss, InetSocketAddress addr,
-                Set<SelectorThread> selectorThreads) throws IOException {
+                            Set<SelectorThread> selectorThreads) throws IOException {
             super("NIOServerCxnFactory.AcceptThread:" + addr);
             this.acceptSocket = ss;
-            this.acceptKey =
-                acceptSocket.register(selector, SelectionKey.OP_ACCEPT);
+            this.acceptKey = acceptSocket.register(selector, SelectionKey.OP_ACCEPT);
             this.selectorThreads = Collections.unmodifiableList(
-                new ArrayList<SelectorThread>(selectorThreads));
+                    new ArrayList<SelectorThread>(selectorThreads));
             selectorIterator = this.selectorThreads.iterator();
         }
 
@@ -213,15 +238,15 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                 closeSelector();
                 // This will wake up the selector threads, and tell the
                 // worker thread pool to begin shutdown.
-            	if (!reconfiguring) {                    
+                if (!reconfiguring) {
                     NIOServerCnxnFactory.this.stop();
                 }
                 LOG.info("accept thread exitted run method");
             }
         }
-        
+
         public void setReconfiguring() {
-        	reconfiguring = true;
+            reconfiguring = true;
         }
 
         private void select() {
@@ -229,7 +254,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                 selector.select();
 
                 Iterator<SelectionKey> selectedKeys =
-                    selector.selectedKeys().iterator();
+                        selector.selectedKeys().iterator();
                 while (!stopped && selectedKeys.hasNext()) {
                     SelectionKey key = selectedKeys.next();
                     selectedKeys.remove();
@@ -247,7 +272,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                         }
                     } else {
                         LOG.warn("Unexpected ops in accept select "
-                                 + key.readyOps());
+                                + key.readyOps());
                     }
                 }
             } catch (IOException e) {
@@ -288,13 +313,13 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                 InetAddress ia = sc.socket().getInetAddress();
                 int cnxncount = getClientCnxnCount(ia);
 
-                if (maxClientCnxns > 0 && cnxncount >= maxClientCnxns){
+                if (maxClientCnxns > 0 && cnxncount >= maxClientCnxns) {
                     throw new IOException("Too many connections from " + ia
-                                          + " - max is " + maxClientCnxns );
+                            + " - max is " + maxClientCnxns);
                 }
 
                 LOG.info("Accepted socket connection from "
-                         + sc.socket().getRemoteSocketAddress());
+                        + sc.socket().getRemoteSocketAddress());
                 sc.configureBlocking(false);
 
                 // Round-robin assign this connection to a selector thread
@@ -304,14 +329,14 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                 SelectorThread selectorThread = selectorIterator.next();
                 if (!selectorThread.addAcceptedConnection(sc)) {
                     throw new IOException(
-                        "Unable to add connection to selector queue"
-                        + (stopped ? " (shutdown in progress)" : ""));
+                            "Unable to add connection to selector queue"
+                                    + (stopped ? " (shutdown in progress)" : ""));
                 }
                 acceptErrorLogger.flush();
             } catch (IOException e) {
                 // accept, maxClientCnxns, configureBlocking
                 acceptErrorLogger.rateLimitLog(
-                    "Error accepting new connection: " + e.getMessage());
+                        "Error accepting new connection: " + e.getMessage());
                 fastCloseSock(sc);
             }
             return accepted;
@@ -324,18 +349,22 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
      * across the connections. This thread is the only thread that performs
      * any non-threadsafe or potentially blocking calls on the selector
      * (registering new connections and reading/writing interest ops).
-     *
+     * SelectorThread 接收来自 AcceptThread 的新接受的连接, 负责选择跨连接的 i/o 准备工作。
+     * 此线程是在选择器上执行任何 non-threadsafe 或可能阻塞的调用 (注册新连接和读取/写入利息 ops) 的唯一线程。
+     * <p>
      * Assignment of a connection to a SelectorThread is permanent and only
      * one SelectorThread will ever interact with the connection. There are
      * 1-N SelectorThreads, with connections evenly apportioned between the
      * SelectorThreads.
-     *
+     * AcceptThread与 SelectorThread 的连接的分配是永久性的, 只有一个 SelectorThread 会与连接进行交互。
+     * 有 1-N SelectorThreads, 连接均匀地分配在 SelectorThreads 之间。
+     * <p>
      * If there is a worker thread pool, when a connection has I/O to perform
      * the SelectorThread removes it from selection by clearing its interest
      * ops and schedules the I/O for processing by a worker thread. When the
      * work is complete, the connection is placed on the ready queue to have
      * its interest ops restored and resume selection.
-     *
+     * <p>
      * If there is no worker thread pool, the SelectorThread performs the I/O
      * directly.
      */
@@ -355,6 +384,8 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
          * Place new accepted connection onto a queue for adding. Do this
          * so only the selector thread modifies what keys are registered
          * with the selector.
+         * 将新接受的连接放置到队列中以添加。
+         * 这样做, 只有选择器线程修改哪些键是注册的选择器。
          */
         public boolean addAcceptedConnection(SocketChannel accepted) {
             if (stopped || !acceptedQueue.offer(accepted)) {
@@ -383,6 +414,8 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
          * dispatches ready I/O work requests, then registers all pending
          * newly accepted connections and updates any interest ops on the
          * queue.
+         * 线程的主循环在连接上selects() 并调度就绪的 i/o 工作请求,
+         * 然后注册所有挂起的新接受的连接, 并更新队列上的任何利息 ops。
          */
         public void run() {
             try {
@@ -427,10 +460,10 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
 
                 Set<SelectionKey> selected = selector.selectedKeys();
                 ArrayList<SelectionKey> selectedList =
-                    new ArrayList<SelectionKey>(selected);
-                Collections.shuffle(selectedList);
+                        new ArrayList<SelectionKey>(selected);
+                Collections.shuffle(selectedList);// 将请求打乱顺序
                 Iterator<SelectionKey> selectedKeys = selectedList.iterator();
-                while(!stopped && selectedKeys.hasNext()) {
+                while (!stopped && selectedKeys.hasNext()) {// 循环处理请求
                     SelectionKey key = selectedKeys.next();
                     selected.remove(key);
 
@@ -438,7 +471,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                         cleanupSelectionKey(key);
                         continue;
                     }
-                    if (key.isReadable() || key.isWritable()) {
+                    if (key.isReadable() || key.isWritable()) {// 判断key的读写权限
                         handleIO(key);
                     } else {
                         LOG.warn("Unexpected ops in select " + key.readyOps());
@@ -453,6 +486,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
          * Schedule I/O for processing on the connection associated with
          * the given SelectionKey. If a worker thread pool is not being used,
          * I/O is run directly by this thread.
+         * 对与给定 SelectionKey 关联的连接进行处理的计划 i/o。如果未使用工作线程池, 则此线程直接运行 i/o。
          */
         private void handleIO(SelectionKey key) {
             IOWorkRequest workRequest = new IOWorkRequest(this, key);
@@ -475,7 +509,9 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
             while (!stopped && (accepted = acceptedQueue.poll()) != null) {
                 SelectionKey key = null;
                 try {
+                    // 向SocketChannel中注册 SelectionKey
                     key = accepted.register(selector, SelectionKey.OP_READ);
+                    // 将创建的连接 附加到 SelectionKey 中
                     NIOServerCnxn cnxn = createConnection(accepted, key, this);
                     key.attach(cnxn);
                     addCnxn(cnxn);
@@ -508,6 +544,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
     /**
      * IOWorkRequest is a small wrapper class to allow doIO() calls to be
      * run on a connection using a WorkerService.
+     * IOWorkRequest 是一个小包装类, 允许 doIO()调用在使用 WorkerService 的连接上运行。
      */
     private class IOWorkRequest extends WorkerService.WorkRequest {
         private final SelectorThread selectorThread;
@@ -580,7 +617,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                 }
 
             } catch (InterruptedException e) {
-                  LOG.info("ConnnectionExpirerThread interrupted");
+                LOG.info("ConnnectionExpirerThread interrupted");
             }
         }
     }
@@ -592,13 +629,18 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
      * by the worker threads (or the selector threads directly, if no worker
      * thread pool is created), we can create a fixed set of these to be
      * shared by connections.
+     * 我们使用此缓冲区来执行高效的套接字 i/o。
+     * 由于 i/o 是由辅助线程 (或如果没有创建工作线程池,选择器线程直接处理的),
+     * 则可以创建一个由连接共享的固定集。
+     *
      */
     private static final ThreadLocal<ByteBuffer> directBuffer =
-        new ThreadLocal<ByteBuffer>() {
-            @Override protected ByteBuffer initialValue() {
-                return ByteBuffer.allocateDirect(directBufferBytes);
-            }
-        };
+            new ThreadLocal<ByteBuffer>() {
+                @Override
+                protected ByteBuffer initialValue() {
+                    return ByteBuffer.allocateDirect(directBufferBytes);
+                }
+            };
 
     public static ByteBuffer getDirectBuffer() {
         return directBufferBytes > 0 ? directBuffer.get() : null;
@@ -606,10 +648,10 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
 
     // sessionMap is used by closeSession()
     private final ConcurrentHashMap<Long, NIOServerCnxn> sessionMap =
-        new ConcurrentHashMap<Long, NIOServerCnxn>();
+            new ConcurrentHashMap<Long, NIOServerCnxn>();
     // ipMap is used to limit connections per IP
     private final ConcurrentHashMap<InetAddress, Set<NIOServerCnxn>> ipMap =
-        new ConcurrentHashMap<InetAddress, Set<NIOServerCnxn>>( );
+            new ConcurrentHashMap<InetAddress, Set<NIOServerCnxn>>();
 
     protected int maxClientCnxns = 60;
 
@@ -628,6 +670,9 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
      * Construct a new server connection factory which will accept an unlimited number
      * of concurrent connections from each client (up to the file descriptor
      * limits of the operating system). startup(zks) must be called subsequently.
+     * 构建一个新的服务器连接工厂, 它将接受无限数量
+     * 来自每个客户端的并发连接 (最多为文件描述符
+     * 操作系统的限制)。必须随后调用启动 (zks)。
      */
     public NIOServerCnxnFactory() {
     }
@@ -636,7 +681,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
     private ConnectionExpirerThread expirerThread;
     private AcceptThread acceptThread;
     private final Set<SelectorThread> selectorThreads =
-        new HashSet<SelectorThread>();
+            new HashSet<SelectorThread>();
 
     @Override
     public void configure(InetSocketAddress addr, int maxcc, boolean secure) throws IOException {
@@ -647,37 +692,37 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
 
         maxClientCnxns = maxcc;
         sessionlessCnxnTimeout = Integer.getInteger(
-            ZOOKEEPER_NIO_SESSIONLESS_CNXN_TIMEOUT, 10000);
+                ZOOKEEPER_NIO_SESSIONLESS_CNXN_TIMEOUT, 10000);
         // We also use the sessionlessCnxnTimeout as expiring interval for
         // cnxnExpiryQueue. These don't need to be the same, but the expiring
         // interval passed into the ExpiryQueue() constructor below should be
         // less than or equal to the timeout.
         cnxnExpiryQueue =
-            new ExpiryQueue<NIOServerCnxn>(sessionlessCnxnTimeout);
+                new ExpiryQueue<NIOServerCnxn>(sessionlessCnxnTimeout);
         expirerThread = new ConnectionExpirerThread();
 
         int numCores = Runtime.getRuntime().availableProcessors();
         // 32 cores sweet spot seems to be 4 selector threads
         numSelectorThreads = Integer.getInteger(
-            ZOOKEEPER_NIO_NUM_SELECTOR_THREADS,
-            Math.max((int) Math.sqrt((float) numCores/2), 1));
+                ZOOKEEPER_NIO_NUM_SELECTOR_THREADS,
+                Math.max((int) Math.sqrt((float) numCores / 2), 1));
         if (numSelectorThreads < 1) {
             throw new IOException("numSelectorThreads must be at least 1");
         }
 
         numWorkerThreads = Integer.getInteger(
-            ZOOKEEPER_NIO_NUM_WORKER_THREADS, 2 * numCores);
+                ZOOKEEPER_NIO_NUM_WORKER_THREADS, 2 * numCores);
         workerShutdownTimeoutMS = Long.getLong(
-            ZOOKEEPER_NIO_SHUTDOWN_TIMEOUT, 5000);
+                ZOOKEEPER_NIO_SHUTDOWN_TIMEOUT, 5000);
 
         LOG.info("Configuring NIO connection handler with "
-                 + (sessionlessCnxnTimeout/1000) + "s sessionless connection"
-                 + " timeout, " + numSelectorThreads + " selector thread(s), "
-                 + (numWorkerThreads > 0 ? numWorkerThreads : "no")
-                 + " worker threads, and "
-                 + (directBufferBytes == 0 ? "gathered writes." :
-                    ("" + (directBufferBytes/1024) + " kB direct buffers.")));
-        for(int i=0; i<numSelectorThreads; ++i) {
+                + (sessionlessCnxnTimeout / 1000) + "s sessionless connection"
+                + " timeout, " + numSelectorThreads + " selector thread(s), "
+                + (numWorkerThreads > 0 ? numWorkerThreads : "no")
+                + " worker threads, and "
+                + (directBufferBytes == 0 ? "gathered writes." :
+                ("" + (directBufferBytes / 1024) + " kB direct buffers.")));
+        for (int i = 0; i < numSelectorThreads; ++i) {
             selectorThreads.add(new SelectorThread(i));
         }
 
@@ -699,7 +744,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
 
     @Override
     public void reconfigure(InetSocketAddress addr) {
-        ServerSocketChannel oldSS = ss;        
+        ServerSocketChannel oldSS = ss;
         try {
             this.ss = ServerSocketChannel.open();
             ss.socket().setReuseAddress(true);
@@ -713,23 +758,27 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                 acceptThread.join();
             } catch (InterruptedException e) {
                 LOG.error("Error joining old acceptThread when reconfiguring client port {}",
-                            e.getMessage());
+                        e.getMessage());
                 Thread.currentThread().interrupt();
             }
             acceptThread = new AcceptThread(ss, addr, selectorThreads);
             acceptThread.start();
-        } catch(IOException e) {
+        } catch (IOException e) {
             LOG.error("Error reconfiguring client port to {} {}", addr, e.getMessage());
             tryClose(oldSS);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int getMaxClientCnxnsPerHost() {
         return maxClientCnxns;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void setMaxClientCnxnsPerHost(int max) {
         maxClientCnxns = max;
     }
@@ -739,9 +788,9 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
         stopped = false;
         if (workerPool == null) {
             workerPool = new WorkerService(
-                "NIOWorker", numWorkerThreads, false);
+                    "NIOWorker", numWorkerThreads, false);
         }
-        for(SelectorThread thread : selectorThreads) {
+        for (SelectorThread thread : selectorThreads) {
             if (thread.getState() == Thread.State.NEW) {
                 thread.start();
             }
@@ -767,12 +816,12 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
     }
 
     @Override
-    public InetSocketAddress getLocalAddress(){
-        return (InetSocketAddress)ss.socket().getLocalSocketAddress();
+    public InetSocketAddress getLocalAddress() {
+        return (InetSocketAddress) ss.socket().getLocalSocketAddress();
     }
 
     @Override
-    public int getLocalPort(){
+    public int getLocalPort() {
         return ss.socket().getLocalPort();
     }
 
@@ -809,6 +858,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
 
     /**
      * Add or update cnxn in our cnxnExpiryQueue
+     *
      * @param cnxn
      */
     public void touchCnxn(NIOServerCnxn cnxn) {
@@ -826,7 +876,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
             // to 2 to avoid rehash when the first entry is added
             // Construct a ConcurrentHashSet using a ConcurrentHashMap
             set = Collections.newSetFromMap(
-                new ConcurrentHashMap<NIOServerCnxn, Boolean>(2));
+                    new ConcurrentHashMap<NIOServerCnxn, Boolean>(2));
             // Put the new set in the map, but only if another thread
             // hasn't beaten us to it
             Set<NIOServerCnxn> existingSet = ipMap.putIfAbsent(addr, set);
@@ -840,8 +890,17 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
         touchCnxn(cnxn);
     }
 
+    /**
+     * 创建NIO连接
+     *
+     * @param sock
+     * @param sk
+     * @param selectorThread
+     * @return
+     * @throws IOException
+     */
     protected NIOServerCnxn createConnection(SocketChannel sock,
-            SelectionKey sk, SelectorThread selectorThread) throws IOException {
+                                             SelectionKey sk, SelectorThread selectorThread) throws IOException {
         return new NIOServerCnxn(zkServer, sock, sk, this, selectorThread);
     }
 
@@ -853,7 +912,6 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
 
     /**
      * clear all the connections in the selector
-     *
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -865,7 +923,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                 cnxn.close();
             } catch (Exception e) {
                 LOG.warn("Ignoring exception closing cnxn sessionid 0x"
-                         + Long.toHexString(cnxn.getSessionId()), e);
+                        + Long.toHexString(cnxn.getSessionId()), e);
             }
         }
     }
@@ -959,14 +1017,14 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
     @Override
     public void resetAllConnectionStats() {
         // No need to synchronize since cnxns is backed by a ConcurrentHashMap
-        for(ServerCnxn c : cnxns){
+        for (ServerCnxn c : cnxns) {
             c.resetStats();
         }
     }
 
     @Override
     public Iterable<Map<String, Object>> getAllConnectionInfo(boolean brief) {
-        HashSet<Map<String,Object>> info = new HashSet<Map<String,Object>>();
+        HashSet<Map<String, Object>> info = new HashSet<Map<String, Object>>();
         // No need to synchronize since cnxns is backed by a ConcurrentHashMap
         for (ServerCnxn c : cnxns) {
             info.add(c.getConnectionInfo(brief));

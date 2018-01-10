@@ -23,7 +23,7 @@ package org.apache.zookeeper.server;
 import org.apache.zookeeper.common.Time;
 
 /**
- * Basic Server Statistics
+ * 基础的服务器状态信息
  */
 public class ServerStats {
     private long packetsSent;
@@ -117,7 +117,11 @@ public class ServerStats {
         sb.append("Mode: " + getServerState() + "\n");
         return sb.toString();
     }
-    // mutators
+
+    /**
+     * 更新延迟时间（最大和最小以及总延迟和处理数）
+     * @param requestCreateTime
+     */
     synchronized void updateLatency(long requestCreateTime) {
         long latency = Time.currentElapsedTime() - requestCreateTime;
         totalLatency += latency;
@@ -148,6 +152,10 @@ public class ServerStats {
         packetsReceived = 0;
         packetsSent = 0;
     }
+
+    /**
+     * 重置延迟时间和package的接受和发送数
+     */
     synchronized public void reset() {
         resetLatency();
         resetRequestCounters();

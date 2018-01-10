@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Shared utilities
+ * 共享实用程序
  */
 public class ManagedUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ManagedUtil.class);
@@ -55,8 +55,8 @@ public class ManagedUtil {
 
 
     /**
-     * Register the log4j JMX mbeans. Set environment variable
-     * "zookeeper.jmx.log4j.disable" to true to disable registration.
+     * 注册 log4j JMX mbean。设置环境变量
+     * "zookeeper.jmx.log4j.disable" 为 true 可禁用注册。
      * @see http://logging.apache.org/log4j/1.2/apidocs/index.html?org/apache/log4j/jmx/package-summary.html
      * @throws JMException if registration fails
      */
@@ -66,8 +66,10 @@ public class ManagedUtil {
             LOG.debug("registerLog4jMBeans()");
             MBeanServer mbs = MBeanRegistry.getInstance().getPlatformMBeanServer();
 
+            // 原本为以下代码，但是由于log4j并不一定存在项目中，所以实用反射加载log，用于对MBeanServer进行log处理
             try {
                 // Create and Register the top level Log4J MBean
+                // 创建和注册顶级的log4j  MBean
                 // org.apache.log4j.jmx.HierarchyDynamicMBean hdm = new org.apache.log4j.jmx.HierarchyDynamicMBean();
                 Object hdm = Class.forName("org.apache.log4j.jmx.HierarchyDynamicMBean").getDeclaredConstructor().newInstance();
 
@@ -75,8 +77,7 @@ public class ManagedUtil {
                 mbs.registerMBean(hdm, mbo);
 
                 // Add the root logger to the Hierarchy MBean
-                // org.apache.log4j.Logger rootLogger =
-                // org.apache.log4j.Logger.getRootLogger();
+                // org.apache.log4j.Logger rootLogger = org.apache.log4j.Logger.getRootLogger();
                 Object rootLogger = Class.forName("org.apache.log4j.Logger")
                         .getMethod("getRootLogger", (Class<?>[]) null)
                         .invoke(null, (Object[]) null);
@@ -90,8 +91,7 @@ public class ManagedUtil {
 
                 // Get each logger from the Log4J Repository and add it to the
                 // Hierarchy MBean created above.
-                // org.apache.log4j.spi.LoggerRepository r =
-                // org.apache.log4j.LogManager.getLoggerRepository();
+                // org.apache.log4j.spi.LoggerRepository r = org.apache.log4j.LogManager.getLoggerRepository();
                 Object r = Class.forName("org.apache.log4j.LogManager")
                         .getMethod("getLoggerRepository", (Class<?>[]) null)
                         .invoke(null, (Object[]) null);

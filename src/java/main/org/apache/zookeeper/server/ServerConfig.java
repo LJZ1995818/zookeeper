@@ -28,9 +28,9 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 
 /**
  * Server configuration storage.
- *
+ * 服务器配置存储
  * We use this instead of Properties as it's typed.
- *
+ * 我们使用它而不是属性, 因为它的类型。
  */
 @InterfaceAudience.Public
 public class ServerConfig {
@@ -51,6 +51,7 @@ public class ServerConfig {
 
     /**
      * Parse arguments for server configuration
+     * 为服务器配置解析参数
      * @param args clientPort dataDir and optional tickTime and maxClientCnxns
      * @return ServerConfig configured wrt arguments
      * @throws IllegalArgumentException on invalid usage
@@ -72,7 +73,7 @@ public class ServerConfig {
     }
 
     /**
-     * Parse a ZooKeeper configuration file
+     * 解析一个zookeeper配置文件
      * @param path the patch of the configuration file
      * @return ServerConfig configured wrt arguments
      * @throws ConfigException error processing configuration
@@ -87,7 +88,7 @@ public class ServerConfig {
     }
 
     /**
-     * Read attributes from a QuorumPeerConfig.
+     * 从QuorumPeerConfig中读取属性
      * @param config
      */
     public void readFrom(QuorumPeerConfig config) {

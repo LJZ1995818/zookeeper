@@ -168,7 +168,7 @@ public interface Watcher {
     }
 
     /**
-     * Enumeration of types of watchers
+     * watchers类型的枚举类型
      */
     @InterfaceAudience.Public
     public enum WatcherType {

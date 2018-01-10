@@ -32,7 +32,7 @@ import org.apache.zookeeper.jmx.MBeanRegistry;
 import org.apache.zookeeper.jmx.ZKMBeanInfo;
 
 /**
- * Implementation of connection MBean interface.
+ * 实现connection MBean interface.
  */
 public class ConnectionBean implements ConnectionMXBean, ZKMBeanInfo {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionBean.class);
@@ -85,7 +85,11 @@ public class ConnectionBean implements ConnectionMXBean, ZKMBeanInfo {
     public boolean isHidden() {
         return false;
     }
-    
+
+    /**
+     * 获取暂时性节点
+     * @return
+     */
     public String[] getEphemeralNodes() {
         if(zk.getZKDatabase()  !=null){
             String[] res = zk.getZKDatabase().getEphemerals(sessionId)
@@ -99,7 +103,10 @@ public class ConnectionBean implements ConnectionMXBean, ZKMBeanInfo {
     public String getStartedTime() {
         return stats.getEstablished().toString();
     }
-    
+
+    /**
+     * 结束session
+     */
     public void terminateSession() {
         try {
             zk.closeSession(sessionId);

@@ -19,7 +19,7 @@
 package org.apache.zookeeper.server;
 
 /**
- * This MBean represents a client connection.
+ * 这个MBean代表客户端连接
  */
 public interface ConnectionMXBean {
     /**
@@ -56,12 +56,12 @@ public interface ConnectionMXBean {
     public int getSessionTimeout();
     
     /**
-     * Terminate this client session. The client will reconnect with a different
+     * Terminate（终止） this client session. The client will reconnect with a different
      * session id.
      */
     public void terminateSession();
     /**
-     * Terminate thei client connection. The client will immediately attempt to 
+     * Terminate（终止） this client connection. The client will immediately attempt to
      * reconnect with the same session id.
      */
     public void terminateConnection();

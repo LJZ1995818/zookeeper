@@ -27,7 +27,9 @@ import org.apache.zookeeper.server.quorum.QuorumPeer.QuorumServer;
  * All quorum validators have to implement a method called
  * containsQuorum, which verifies if a HashSet of server 
  * identifiers constitutes a quorum.
- *
+ * 所有仲裁验证程序都必须实现一个名为
+ * containsQuorum, 它验证服务器是否 HashSet
+ * 标识符构成法定人数。
  */
 
 public interface QuorumVerifier {

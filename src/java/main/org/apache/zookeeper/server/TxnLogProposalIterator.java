@@ -56,8 +56,7 @@ public class TxnLogProposalIterator implements Iterator<Proposal> {
     }
 
     /**
-     * Proposal returned by this iterator has request part set to null, since
-     * it is not used for follower sync-up.
+     * 此迭代器返回的方案将请求部分设置为 null, 因为它不用于追随者 sync-up。
      */
     @Override
     public Proposal next() {
@@ -80,6 +79,7 @@ public class TxnLogProposalIterator implements Iterator<Proposal> {
             p.request = null;
 
             // This is the only place that can throw IO exception
+            // 只有在这个地方才能抛出异常
             hasNext = itr.next();
 
         } catch (IOException e) {
@@ -98,6 +98,7 @@ public class TxnLogProposalIterator implements Iterator<Proposal> {
     /**
      * Close the files and release the resources which are used for iterating
      * transaction records
+     * 关闭文件并释放被使用的迭代事务记录的资源
      */
     public void close() {
         if(itr != null){

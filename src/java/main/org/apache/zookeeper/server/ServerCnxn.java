@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Interface to a Server connection - represents a connection from a client
  * to the server.
+ * 接口到服务器连接-表示来自客户端的连接到服务器。
  */
 public abstract class ServerCnxn implements Stats, Watcher {
     // This is just an arbitrary object to represent requests issued by
@@ -63,7 +64,7 @@ public abstract class ServerCnxn implements Stats, Watcher {
     public abstract void sendResponse(ReplyHeader h, Record r, String tag)
         throws IOException;
 
-    /* notify the client the session is closing and close/cleanup socket */
+    /* 通知客户端会话正在关闭, 关闭/清理socket */
     abstract void sendCloseSession();
 
     public abstract void process(WatchedEvent event);
@@ -175,6 +176,9 @@ public abstract class ServerCnxn implements Stats, Watcher {
         return packetsSent.incrementAndGet();
     }
 
+    /**
+     * 用于获取连接信息而做的更新
+     */
     protected synchronized void updateStatsForResponse(long cxid, long zxid,
             String op, long start, long end)
     {
@@ -266,12 +270,11 @@ public abstract class ServerCnxn implements Stats, Watcher {
     public abstract void setClientCertificateChain(Certificate[] chain);
     
     /**
-     * Print information about the connection.
+     * 打印连接信息
      * @param brief iff true prints brief details, otw full detail
      * @return information about this connection
      */
-    public synchronized void
-    dumpConnectionInfo(PrintWriter pwriter, boolean brief) {
+    public synchronized void dumpConnectionInfo(PrintWriter pwriter, boolean brief) {
         pwriter.print(" ");
         pwriter.print(getRemoteSocketAddress());
         pwriter.print("[");
@@ -317,6 +320,9 @@ public abstract class ServerCnxn implements Stats, Watcher {
         pwriter.print(")");
     }
 
+    /**
+     * 获取连接信息
+     */
     public synchronized Map<String, Object> getConnectionInfo(boolean brief) {
         Map<String, Object> info = new LinkedHashMap<String, Object>();
         info.put("remote_socket_address", getRemoteSocketAddress());

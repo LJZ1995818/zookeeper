@@ -51,8 +51,17 @@ public class WorkerService {
     private final ArrayList<ExecutorService> workers =
         new ArrayList<ExecutorService>();
 
+    /**
+     * 线程前缀名称
+     */
     private final String threadNamePrefix;
+    /**
+     * 工作线程数
+     */
     private int numWorkerThreads;
+    /**
+     * 工作线程是否应单独分配
+     */
     private boolean threadsAreAssignable;
     private long shutdownTimeoutMS = 5000;
 
@@ -63,8 +72,7 @@ public class WorkerService {
      * @param numThreads            number of worker threads (0 - N)
      *                              If 0, scheduled work is run immediately by
      *                              the calling thread.
-     * @param useAssignableThreads  whether the worker threads should be
-     *                              individually assignable or not
+     * @param useAssignableThreads  工作线程是否应单独分配
      */
     public WorkerService(String name, int numThreads,
                          boolean useAssignableThreads) {
@@ -77,16 +85,19 @@ public class WorkerService {
     /**
      * Callers should implement a class extending WorkRequest in order to
      * schedule work with the service.
+     * 调用方应实现一个扩展 WorkRequest 的类, 以便调度服务的工作。
      */
     public static abstract class WorkRequest {
         /**
          * Must be implemented. Is called when the work request is run.
+         * 必须实现，因为它要在运行工作请求时调用
          */
         public abstract void doWork() throws Exception;
 
         /**
          * (Optional) If implemented, is called if the service is stopped
          * or unable to schedule the request.
+         * （可选） 如果已实现, 则在服务停止或无法计划请求时调用。
          */
         public void cleanup() {
         }
@@ -117,12 +128,13 @@ public class WorkerService {
         ScheduledWorkRequest scheduledWorkRequest =
             new ScheduledWorkRequest(workRequest);
 
-        // If we have a worker thread pool, use that; otherwise, do the work
-        // directly.
+        // If we have a worker thread pool, use that; otherwise, do the work directly.
+        // 如果我们有一个工作的线程池，则使用它，否则，直接运行
         int size = workers.size();
         if (size > 0) {
             try {
                 // make sure to map negative ids as well to [0, size-1]
+                // 确保负数的ID也能映射到[0,size-1]
                 int workerNum = ((int) (id % size) + size) % size;
                 ExecutorService worker = workers.get(workerNum);
                 worker.execute(scheduledWorkRequest);
@@ -133,6 +145,7 @@ public class WorkerService {
         } else {
             // When there is no worker thread pool, do the work directly
             // and wait for its completion
+            // 当没有工作线程池，则直接运行并等待运行完毕
             scheduledWorkRequest.start();
             try {
                 scheduledWorkRequest.join();
@@ -143,6 +156,9 @@ public class WorkerService {
         }
     }
 
+    /**
+     * 将WorkRequest包装成调度线程
+     */
     private class ScheduledWorkRequest extends ZooKeeperThread {
         private final WorkRequest workRequest;
 
@@ -172,6 +188,9 @@ public class WorkerService {
      * thread factory because (1) we want to give the worker threads easier
      * to identify names; and (2) we want to make the worker threads daemon
      * threads so they don't block the server from shutting down.
+     * 工作线程池的 ThreadFactory。我们不使用默认的线程工厂, 因为
+     * (1) 我们希望给工作线程更容易识别名称
+     * (2) 我们要使工作线程守护进程线程, 使他们不会阻止服务器关闭。
      */
     private static class DaemonThreadFactory implements ThreadFactory {
         final ThreadGroup group;
@@ -194,14 +213,17 @@ public class WorkerService {
             Thread t = new Thread(group, r,
                                   namePrefix + threadNumber.getAndIncrement(),
                                   0);
-            if (!t.isDaemon())
+            if (!t.isDaemon())// 将线程设置为守护线程
                 t.setDaemon(true);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
+            if (t.getPriority() != Thread.NORM_PRIORITY)// 设置线程优先级为正常优先级=5
                 t.setPriority(Thread.NORM_PRIORITY);
             return t;
         }
     }
 
+    /**
+     * 按照需求填充线程池（执行服务：ExecutorService）
+     */
     public void start() {
         if (numWorkerThreads > 0) {
             if (threadsAreAssignable) {
@@ -226,22 +248,26 @@ public class WorkerService {
         }
     }
 
+    /**
+     * 在指定时间内停止服务
+     * @param shutdownTimeoutMS
+     */
     public void join(long shutdownTimeoutMS) {
         // Give the worker threads time to finish executing
         long now = Time.currentElapsedTime();
         long endTime = now + shutdownTimeoutMS;
         for(ExecutorService worker : workers) {
             boolean terminated = false;
-            while ((now = Time.currentElapsedTime()) <= endTime) {
+            while ((now = Time.currentElapsedTime()) <= endTime) {// 重新计算单个服务的 join 时间
                 try {
-                    terminated = worker.awaitTermination(
+                    terminated = worker.awaitTermination(// 正常等待时间的关闭
                         endTime - now, TimeUnit.MILLISECONDS);
                     break;
                 } catch (InterruptedException e) {
                     // ignore
                 }
             }
-            if (!terminated) {
+            if (!terminated) {// 如果指定时间未关闭，则直接强制关闭
                 // If we've timed out, do a hard shutdown
                 worker.shutdownNow();
             }

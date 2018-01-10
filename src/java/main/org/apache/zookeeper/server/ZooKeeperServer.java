@@ -74,6 +74,8 @@ import org.slf4j.LoggerFactory;
 /**
  * This class implements a simple standalone ZooKeeperServer. It sets up the
  * following chain of RequestProcessors to process requests:
+ * 此类实现了一个简单的独立 ZooKeeperServer。
+ * 它建立了以下 RequestProcessors 链处理请求:
  * PrepRequestProcessor -> SyncRequestProcessor -> FinalRequestProcessor
  */
 public class ZooKeeperServer implements SessionExpirer, ServerStats.Provider {
@@ -109,6 +111,7 @@ public class ZooKeeperServer implements SessionExpirer, ServerStats.Provider {
     /**
      * This is the secret that we use to generate passwords, for the moment it
      * is more of a sanity check.
+     * 这是我们用来生成密码的秘密，目前更明智的检查。
      */
     static final private long superSecret = 0XB3415C00L;
 
@@ -762,7 +765,7 @@ public class ZooKeeperServer implements SessionExpirer, ServerStats.Provider {
      * If the underlying Zookeeper server support local session, this method
      * will set a isLocalSession to true if a request is associated with
      * a local session.
-     *
+     * 如果基础管理员服务器支持本地会话, 则此方法将在请求与本地会话关联时将 isLocalSession 设置为 true。
      * @param si
      */
     protected void setLocalSessionFlag(Request si) {

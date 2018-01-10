@@ -33,6 +33,8 @@ import org.apache.zookeeper.txn.TxnHeader;
  * This is the structure that represents a request moving through a chain of
  * RequestProcessors. There are various pieces of information that is tacked
  * onto the request as it is processed.
+ * 这是代表通过链式RequestProcessors移动的请求的结构。
+ * 在处理请求时，有各种各样的信息
  */
 public class Request {
     public final static Request requestOfDeath = new Request(null, 0, 0, 0, null, null);
@@ -122,7 +124,7 @@ public class Request {
     }
 
     /**
-     * is the packet type a valid packet in zookeeper
+     * 判断消息类型 是否符合 验证
      *
      * @param type
      *                the type of the packet

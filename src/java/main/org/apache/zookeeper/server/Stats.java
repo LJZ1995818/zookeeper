@@ -22,31 +22,32 @@ import java.util.Date;
 
 /**
  * Statistics on the ServerCnxn
+ * ServerCnxn的 状态接口
  */
 interface Stats {
-    /** Date/time the connection was established
+    /** 
+     * 获取建立连接的时间
      * @since 3.3.0 */
     Date getEstablished();
 
     /**
-     * The number of requests that have been submitted but not yet
-     * responded to.
+     * 已提交但尚未答复的请求数。
      */
     long getOutstandingRequests();
-    /** Number of packets received */
+    /** 收到的package数目*/
     long getPacketsReceived();
     /** Number of packets sent (incl notifications) */
     long getPacketsSent();
-    /** Min latency in ms
+    /** 最小延迟 ms
      * @since 3.3.0 */
     long getMinLatency();
-    /** Average latency in ms
+    /** 平均延迟 ms
      * @since 3.3.0 */
     long getAvgLatency();
-    /** Max latency in ms
+    /** 最大延迟
      * @since 3.3.0 */
     long getMaxLatency();
-    /** Last operation performed by this connection
+    /** 此连接的上一个操作
      * @since 3.3.0 */
     String getLastOperation();
     /** Last cxid of this connection
@@ -55,14 +56,14 @@ interface Stats {
     /** Last zxid of this connection
      * @since 3.3.0 */
     long getLastZxid();
-    /** Last time server sent a response to client on this connection
+    /** 上次服务器在该连接上向客户端发送响应
      * @since 3.3.0 */
     long getLastResponseTime();
-    /** Latency of last response to client on this connection in ms
+    /** 此连接上的客户端上一次响应的滞后时间 ms
      * @since 3.3.0 */
     long getLastLatency();
 
-    /** Reset counters
+    /** 重置状态
      * @since 3.3.0 */
     void resetStats();
 }

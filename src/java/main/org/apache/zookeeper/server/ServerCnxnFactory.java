@@ -47,10 +47,12 @@ public abstract class ServerCnxnFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ServerCnxnFactory.class);
 
     // Tells whether SSL is enabled on this ServerCnxnFactory
+    // 获取在这个ServerCnxnFactory中是否需要开启ssl
     protected boolean secure;
 
     /**
      * The buffer will cause the connection to be close when we do a send.
+     * 这个 空buffer 是在我们关闭连接的时候发送的
      */
     static final ByteBuffer closeConn = ByteBuffer.allocate(0);
 
@@ -84,10 +86,10 @@ public abstract class ServerCnxnFactory {
     protected SaslServerCallbackHandler saslServerCallbackHandler;
     public Login login;
 
-    /** Maximum number of connections allowed from particular host (ip) */
+    /** 获取特定主机 (ip) 允许的最大连接数*/
     public abstract int getMaxClientCnxnsPerHost();
 
-    /** Maximum number of connections allowed from particular host (ip) */
+    /** 设置特定主机 (ip) 允许的最大连接数*/
     public abstract void setMaxClientCnxnsPerHost(int max);
 
     public boolean isSecure() {
@@ -122,7 +124,12 @@ public abstract class ServerCnxnFactory {
     }
 
     public abstract void closeAll();
-    
+
+    /**
+     * 根据配置文件信息 zookeeper.serverCnxnFactory 创建连接工程 默认是NIOServerCnxnFactory
+     * @return
+     * @throws IOException
+     */
     static public ServerCnxnFactory createFactory() throws IOException {
         String serverCnxnFactoryName =
             System.getProperty(ZOOKEEPER_SERVER_CNXN_FACTORY);
@@ -163,19 +170,28 @@ public abstract class ServerCnxnFactory {
     public abstract Iterable<Map<String, Object>> getAllConnectionInfo(boolean brief);
 
     private final ConcurrentHashMap<ServerCnxn, ConnectionBean> connectionBeans =
-        new ConcurrentHashMap<ServerCnxn, ConnectionBean>();
+            new ConcurrentHashMap<>();
 
     // Connection set is relied on heavily by four letter commands
     // Construct a ConcurrentHashSet using a ConcurrentHashMap
     protected final Set<ServerCnxn> cnxns = Collections.newSetFromMap(
         new ConcurrentHashMap<ServerCnxn, Boolean>());
+
+    /**
+     * 卸载MBean连接
+     * @param serverCnxn 服务器连接
+     */
     public void unregisterConnection(ServerCnxn serverCnxn) {
         ConnectionBean jmxConnectionBean = connectionBeans.remove(serverCnxn);
         if (jmxConnectionBean != null){
             MBeanRegistry.getInstance().unregister(jmxConnectionBean);
         }
     }
-    
+
+    /**
+     * 注册MBean连接
+     * @param serverCnxn 服务器连接
+     */
     public void registerConnection(ServerCnxn serverCnxn) {
         if (zkServer != null) {
             ConnectionBean jmxConnectionBean = new ConnectionBean(serverCnxn, zkServer);
@@ -191,7 +207,7 @@ public abstract class ServerCnxnFactory {
 
     /**
      * Initialize the server SASL if specified.
-     *
+     * 初始化 sasl的服务器
      * If the user has specified a "ZooKeeperServer.LOGIN_CONTEXT_NAME_KEY"
      * or a jaas.conf using "java.security.auth.login.config"
      * the authentication is required and an exception is raised.

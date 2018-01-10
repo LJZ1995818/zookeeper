@@ -623,6 +623,7 @@ public class FileTxnLog implements TxnLog {
 
         /**
          * Return total storage size of txnlog that will return by this iterator.
+         * 通过此迭代器，返回txnlog的总存储大小
          */
         public long getStorageSize() {
             long sum = 0;

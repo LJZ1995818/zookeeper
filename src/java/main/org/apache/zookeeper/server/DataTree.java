@@ -1037,8 +1037,7 @@ public class DataTree {
                 try {
                     deleteNode(path, zxid);
                     if (LOG.isDebugEnabled()) {
-                        LOG
-                                .debug("Deleting ephemeral node " + path
+                        LOG.debug("Deleting ephemeral node " + path
                                         + " for session 0x"
                                         + Long.toHexString(session));
                     }

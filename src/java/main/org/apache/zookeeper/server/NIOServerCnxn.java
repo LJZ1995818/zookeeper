@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -73,7 +73,7 @@ public class NIOServerCnxn extends ServerCnxn {
     private ByteBuffer incomingBuffer = lenBuffer;
 
     private final Queue<ByteBuffer> outgoingBuffers =
-        new LinkedBlockingQueue<ByteBuffer>();
+            new LinkedBlockingQueue<ByteBuffer>();
 
     private int sessionTimeout;
 
@@ -130,21 +130,21 @@ public class NIOServerCnxn extends ServerCnxn {
      * @param bb
      */
     void sendBufferSync(ByteBuffer bb) {
-       try {
+        try {
            /* configure socket to be blocking
             * so that we dont have to do write in
             * a tight while loop
             */
-           if (bb != ServerCnxnFactory.closeConn) {
-               if (sock.isOpen()) {
-                   sock.configureBlocking(true);
-                   sock.write(bb);
-               }
-               packetSent();
-           }
-       } catch (IOException ie) {
-           LOG.error("Error sending data synchronously ", ie);
-       }
+            if (bb != ServerCnxnFactory.closeConn) {
+                if (sock.isOpen()) {
+                    sock.configureBlocking(true);
+                    sock.write(bb);
+                }
+                packetSent();
+            }
+        } catch (IOException ie) {
+            LOG.error("Error sending data synchronously ", ie);
+        }
     }
 
     /**
@@ -154,7 +154,7 @@ public class NIOServerCnxn extends ServerCnxn {
     public void sendBuffer(ByteBuffer bb) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("Add a buffer to outgoingBuffers, sk " + sk
-                      + " is valid: " + sk.isValid());
+                    + " is valid: " + sk.isValid());
         }
         outgoingBuffers.add(bb);
         requestInterestOpsUpdate();
@@ -167,8 +167,8 @@ public class NIOServerCnxn extends ServerCnxn {
             if (rc < 0) {
                 throw new EndOfStreamException(
                         "Unable to read additional data from client sessionid 0x"
-                        + Long.toHexString(sessionId)
-                        + ", likely client has closed socket");
+                                + Long.toHexString(sessionId)
+                                + ", likely client has closed socket");
             }
         }
 
@@ -241,7 +241,7 @@ public class NIOServerCnxn extends ServerCnxn {
                 packetSent();
                 outgoingBuffers.remove();
             }
-         } else {
+        } else {
             directBuffer.clear();
 
             for (ByteBuffer b : outgoingBuffers) {
@@ -313,7 +313,7 @@ public class NIOServerCnxn extends ServerCnxn {
         try {
             if (isSocketOpen() == false) {
                 LOG.warn("trying to do i/o on a null socket for session:0x"
-                         + Long.toHexString(sessionId));
+                        + Long.toHexString(sessionId));
 
                 return;
             }
@@ -322,8 +322,8 @@ public class NIOServerCnxn extends ServerCnxn {
                 if (rc < 0) {
                     throw new EndOfStreamException(
                             "Unable to read additional data from client sessionid 0x"
-                            + Long.toHexString(sessionId)
-                            + ", likely client has closed socket");
+                                    + Long.toHexString(sessionId)
+                                    + ", likely client has closed socket");
                 }
                 if (incomingBuffer.remaining() == 0) {
                     boolean isPayload;
@@ -337,8 +337,7 @@ public class NIOServerCnxn extends ServerCnxn {
                     }
                     if (isPayload) { // not the case for 4letterword
                         readPayload();
-                    }
-                    else {
+                    } else {
                         // four letter words take care
                         // need not do anything else
                         return;
@@ -354,7 +353,7 @@ public class NIOServerCnxn extends ServerCnxn {
             }
         } catch (CancelledKeyException e) {
             LOG.warn("CancelledKeyException causing close of session 0x"
-                     + Long.toHexString(sessionId));
+                    + Long.toHexString(sessionId));
             if (LOG.isDebugEnabled()) {
                 LOG.debug("CancelledKeyException stack trace", e);
             }
@@ -368,7 +367,7 @@ public class NIOServerCnxn extends ServerCnxn {
             close();
         } catch (IOException e) {
             LOG.warn("Exception causing close of session 0x"
-                     + Long.toHexString(sessionId) + ": " + e.getMessage());
+                    + Long.toHexString(sessionId) + ": " + e.getMessage());
             if (LOG.isDebugEnabled()) {
                 LOG.debug("IOException stack trace", e);
             }
@@ -473,10 +472,10 @@ public class NIOServerCnxn extends ServerCnxn {
             checkFlush(false);
         }
     }
+
     /** Return if four letter word found and responded to, otw false **/
     private boolean checkFourLetterWord(final SelectionKey k, final int len)
-    throws IOException
-    {
+            throws IOException {
         // We take advantage of the limited size of the length to look
         // for cmds. They are all 4-bytes which fits inside of an int
         if (!FourLetterCommands.isKnown(len)) {
@@ -498,7 +497,7 @@ public class NIOServerCnxn extends ServerCnxn {
         if (k != null) {
             try {
                 k.cancel();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 LOG.error("Error cancelling command selection key ", e);
             }
         }
@@ -586,7 +585,7 @@ public class NIOServerCnxn extends ServerCnxn {
     @Override
     public String toString() {
         return "ip: " + sock.socket().getRemoteSocketAddress() +
-               " sessionId: 0x" + Long.toHexString(sessionId);
+                " sessionId: 0x" + Long.toHexString(sessionId);
     }
 
     /**
@@ -627,8 +626,8 @@ public class NIOServerCnxn extends ServerCnxn {
         LOG.info("Closed socket connection for client "
                 + sock.socket().getRemoteSocketAddress()
                 + (sessionId != 0 ?
-                        " which had sessionid 0x" + Long.toHexString(sessionId) :
-                        " (no session established for client)"));
+                " which had sessionid 0x" + Long.toHexString(sessionId) :
+                " (no session established for client)"));
         closeSock(sock);
     }
 
@@ -709,13 +708,13 @@ public class NIOServerCnxn extends ServerCnxn {
             if (h.getXid() > 0) {
                 // check throttling
                 if (outstandingRequests.decrementAndGet() < 1 ||
-                    zkServer.getInProcess() < outstandingLimit) {
+                        zkServer.getInProcess() < outstandingLimit) {
                     enableRecv();
                 }
             }
-         } catch(Exception e) {
+        } catch (Exception e) {
             LOG.warn("Unexpected exception. Destruction averted.", e);
-         }
+        }
     }
 
     /*
@@ -728,9 +727,9 @@ public class NIOServerCnxn extends ServerCnxn {
         ReplyHeader h = new ReplyHeader(-1, -1L, 0);
         if (LOG.isTraceEnabled()) {
             ZooTrace.logTraceMessage(LOG, ZooTrace.EVENT_DELIVERY_TRACE_MASK,
-                                     "Deliver event " + event + " to 0x"
-                                     + Long.toHexString(this.sessionId)
-                                     + " through " + this);
+                    "Deliver event " + event + " to 0x"
+                            + Long.toHexString(this.sessionId)
+                            + " through " + this);
         }
 
         // Convert WatchedEvent to a type that can be sent over the wire
