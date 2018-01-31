@@ -65,10 +65,22 @@ public class ZooTrace {
         LOG.info("Set text trace mask to 0x" + Long.toHexString(mask));
     }
 
+    /**
+     * 判断指定日志掩码，是否开启记录功能
+     * @param log
+     * @param mask
+     * @return
+     */
     public static synchronized boolean isTraceEnabled(Logger log, long mask) {
         return log.isTraceEnabled() && (mask & traceMask) != 0;
     }
 
+    /**
+     * 记录追踪日志
+     * @param log
+     * @param mask 日志掩码
+     * @param msg 日志信息
+     */
     public static void logTraceMessage(Logger log, long mask, String msg) {
         if (isTraceEnabled(log, mask)) {
             log.trace(msg);
@@ -84,6 +96,14 @@ public class ZooTrace {
          }
     }
 
+    /**
+     * 记录请求信息
+     * @param log
+     * @param mask
+     * @param rp
+     * @param request
+     * @param header
+     */
     static public void logRequest(Logger log, long mask,
             char rp, Request request, String header)
     {

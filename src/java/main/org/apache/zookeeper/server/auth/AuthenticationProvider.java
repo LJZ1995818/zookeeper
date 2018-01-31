@@ -24,6 +24,7 @@ import org.apache.zookeeper.server.ServerCnxn;
 /**
  * This interface is implemented by authentication providers to add new kinds of
  * authentication schemes to ZooKeeper.
+ * 此接口由认证供应商实现了添加认证方案。
  */
 public interface AuthenticationProvider {
     /**
@@ -52,6 +53,8 @@ public interface AuthenticationProvider {
      * This method is called to see if the given id matches the given id
      * expression in the ACL. This allows schemes to use application specific
      * wild cards.
+     * 此方法被调用，以确定给定ID是否与ACL中给定的id表达式相匹配。
+     * 这使得方案可以使用特定于应用程序的通配符。
      * 
      * @param id
      *                the id to check.
@@ -66,6 +69,8 @@ public interface AuthenticationProvider {
      * should be used to identify the creator of a node. Some ids such as hosts
      * and ip addresses are rather transient and in general don't really
      * identify a client even though sometimes they do.
+     * 此方法用于检查该提供者所做的身份验证是否应用于标识节点的创建者。
+     * 有些ID，如主机和IP地址是相当短暂的，一般来说，并没有真正识别客户机，尽管有时他们会这样做。
      * 
      * @return true if this provider identifies creators.
      */
@@ -73,7 +78,7 @@ public interface AuthenticationProvider {
 
     /**
      * Validates the syntax of an id.
-     * 
+     * 验证id语发是否错误
      * @param id
      *                the id to validate.
      * @return true if id is well formed.

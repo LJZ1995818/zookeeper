@@ -23,8 +23,8 @@ import java.io.PrintWriter;
 import org.apache.zookeeper.server.ServerCnxn;
 
 /**
- * A command that does not do anything except reply to client with predefined message.
- * It is used to inform clients who execute none white listed four letter word commands.
+ * 不做任何事情的命令，除非用预定义的消息回复客户机。
+ * 它用于通知执行无白名单的四个字母字命令的客户机。
  */
 public class NopCommand extends AbstractFourLetterCommand {
     private String msg;

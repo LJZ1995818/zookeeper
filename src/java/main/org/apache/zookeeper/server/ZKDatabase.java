@@ -581,14 +581,14 @@ public class ZKDatabase {
     }
 
     /**
-     * roll the underlying log
+     * 滚动底层日志
      */
     public void rollLog() throws IOException {
         this.snapLog.rollLog();
     }
 
     /**
-     * commit to the underlying transaction log
+     * 提交底层事务日志
      * @throws IOException
      */
     public void commit() throws IOException {

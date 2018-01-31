@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * errors. For example, if some critical thread has stopped due to fatal errors,
  * then it will get notifications and will change the state of ZooKeeper server
  * to ERROR representing an error status.
+ * 默认的listener实现，用来进行内部错误通知
  */
 class ZooKeeperServerListenerImpl implements ZooKeeperServerListener {
     private static final Logger LOG = LoggerFactory
@@ -40,6 +41,6 @@ class ZooKeeperServerListenerImpl implements ZooKeeperServerListener {
     @Override
     public void notifyStopping(String threadName, int exitCode) {
         LOG.info("Thread {} exits, error code {}", threadName, exitCode);
-        zkServer.setState(State.ERROR);
+        zkServer.setState(State.ERROR);// 将zkServer的状态设置为ERROR,迫使整个服务停止
     }
 }

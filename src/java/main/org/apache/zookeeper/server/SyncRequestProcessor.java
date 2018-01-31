@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
  * This RequestProcessor logs requests to disk. It batches the requests to do
  * the io efficiently. The request is not passed to the next RequestProcessor
  * until its log has been synced to disk.
+ * 这个RequestProcessor会将日志持久化到磁盘。它有效地完成了IO的批处理请求。
+ * 请求不传递给下一个RequestProcessor直到日志已同步到磁盘。
+ *
  *
  * SyncRequestProcessor is used in 3 different cases
  * 1. Leader - Sync request to disk and forward it to AckRequestProcessor which
@@ -79,8 +82,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements
     }
 
     /**
-     * used by tests to check for changing
-     * snapcounts
+     * used by tests to check for changing snapcounts
      * @param count
      */
     public static void setSnapCount(int count) {
@@ -102,9 +104,12 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements
 
             // we do this in an attempt to ensure that not all of the servers
             // in the ensemble take a snapshot at the same time
+            // 我们这样做是为了确保集成服务器中的所有服务器不同时进行快照。
             int randRoll = r.nextInt(snapCount/2);
             while (true) {
                 Request si = null;
+                // 如果待刷新的请求为空，则可以空转获取待请求
+                // 如果不为空，则再判断是否需要调用lush进行nextProcessor处理
                 if (toFlush.isEmpty()) {
                     si = queuedRequests.take();
                 } else {
@@ -118,21 +123,21 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements
                     break;
                 }
                 if (si != null) {
-                    // track the number of records written to the log
-                    if (zks.getZKDatabase().append(si)) {
+                    // 跟踪写入日志的记录数
+                    if (zks.getZKDatabase().append(si)) {//需要进行持久化的请求
                         logCount++;
-                        if (logCount > (snapCount / 2 + randRoll)) {
+                        if (logCount > (snapCount / 2 + randRoll)) {// 判断是否需要进行快照存储
                             randRoll = r.nextInt(snapCount/2);
                             // roll the log
                             zks.getZKDatabase().rollLog();
                             // take a snapshot
-                            if (snapInProcess != null && snapInProcess.isAlive()) {
+                            if (snapInProcess != null && snapInProcess.isAlive()) {// 正在进行快照存储
                                 LOG.warn("Too busy to snap, skipping");
                             } else {
                                 snapInProcess = new ZooKeeperThread("Snapshot Thread") {
                                         public void run() {
                                             try {
-                                                zks.takeSnapshot();
+                                                zks.takeSnapshot();// 同步快照内容
                                             } catch(Exception e) {
                                                 LOG.warn("Unexpected exception", e);
                                             }
@@ -142,7 +147,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements
                             }
                             logCount = 0;
                         }
-                    } else if (toFlush.isEmpty()) {
+                    } else if (toFlush.isEmpty()) {//不需要持久化的请求，则直接调用nextProcessor进行处理
                         // optimization for read heavy workloads
                         // iff this is a read, and there are no pending
                         // flushes (writes), then just pass this to the next
@@ -169,6 +174,12 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements
         LOG.info("SyncRequestProcessor exited!");
     }
 
+    /**
+     * 将日志提交到磁盘，并处理toFlush请求
+     * @param toFlush
+     * @throws IOException
+     * @throws RequestProcessorException
+     */
     private void flush(LinkedList<Request> toFlush)
         throws IOException, RequestProcessorException
     {

@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.zookeeper.server.ZooKeeperServer;
 
+/**
+ * auth的注册表 类似于工厂模式
+ */
 public class ProviderRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(ProviderRegistry.class);
 
@@ -46,12 +49,13 @@ public class ProviderRegistry {
         synchronized (ProviderRegistry.class) {
             if (initialized)
                 return;
+            // 先注册ip base64 验证方式工厂
             IPAuthenticationProvider ipp = new IPAuthenticationProvider();
             DigestAuthenticationProvider digp = new DigestAuthenticationProvider();
             authenticationProviders.put(ipp.getScheme(), ipp);
             authenticationProviders.put(digp.getScheme(), digp);
             Enumeration<Object> en = System.getProperties().keys();
-            while (en.hasMoreElements()) {
+            while (en.hasMoreElements()) {// 获取其他的验证方式
                 String k = (String) en.nextElement();
                 if (k.startsWith("zookeeper.authProvider.")) {
                     String className = System.getProperty(k);
@@ -74,6 +78,11 @@ public class ProviderRegistry {
         return WrappedAuthenticationProvider.wrap(getProvider(scheme));
     }
 
+    /**
+     * 根据策略名称获取验证供应器
+     * @param scheme
+     * @return
+     */
     public static AuthenticationProvider getProvider(String scheme) {
         if(!initialized)
             initialize();

@@ -33,32 +33,50 @@ import org.apache.zookeeper.common.Time;
  * ExpiryQueue tracks elements in time sorted fixed duration buckets.
  * It's used by SessionTrackerImpl to expire sessions and NIOServerCnxnFactory
  * to expire connections.
+ * ExpiryQueue 跟踪固定持续时间桶中的元素。
+ * SessionTrackerImpl 使用它来终止会话和 NIOServerCnxnFactory 以终止连接。
  */
 public class ExpiryQueue<E> {
+    /**
+     * E 实体 L 过期时间
+     */
     private final ConcurrentHashMap<E, Long> elemMap =
         new ConcurrentHashMap<E, Long>();
     /**
      * The maximum number of buckets is equal to max timeout/expirationInterval,
      * so the expirationInterval should not be too small compared to the
      * max timeout that this expiry queue needs to maintain.
+     * 根据过期时间  获取元素Set
      */
     private final ConcurrentHashMap<Long, Set<E>> expiryMap =
         new ConcurrentHashMap<Long, Set<E>>();
 
     private final AtomicLong nextExpirationTime = new AtomicLong();
+    /**
+     * 内部过期
+     */
     private final int expirationInterval;
 
+    /**
+     *
+     * @param expirationInterval  表示过期因子
+     */
     public ExpiryQueue(int expirationInterval) {
         this.expirationInterval = expirationInterval;
         nextExpirationTime.set(roundToNextInterval(Time.currentElapsedTime()));
     }
 
+    /**
+     * 时间间隔会越来越短
+     * @param time
+     * @return
+     */
     private long roundToNextInterval(long time) {
         return (time / expirationInterval + 1) * expirationInterval;
     }
 
     /**
-     * Removes element from the queue.
+     * 从队列中移除元素
      * @param elem  element to remove
      * @return      time at which the element was set to expire, or null if
      *              it wasn't present
@@ -71,6 +89,8 @@ public class ExpiryQueue<E> {
                 set.remove(elem);
                 // We don't need to worry about removing empty sets,
                 // they'll eventually be removed when they expire.
+                //我们不需要担心删除空集
+                //他们最终将被删除, 当他们到期。
             }
         }
         return expiryTime;
@@ -79,6 +99,7 @@ public class ExpiryQueue<E> {
     /**
      * Adds or updates expiration time for element in queue, rounding the
      * timeout to the expiry interval bucketed used by this queue.
+     * 添加或更新队列中元素的过期时间, 将超时舍入到此队列使用的到期间隔 bucketed。
      * @param elem     element to add/update
      * @param timeout  timout in milliseconds
      * @return         time at which the element is now set to expire if
@@ -90,11 +111,12 @@ public class ExpiryQueue<E> {
         Long newExpiryTime = roundToNextInterval(now + timeout);
 
         if (newExpiryTime.equals(prevExpiryTime)) {
-            // No change, so nothing to update
+            // 如果为改变，则返回为null
             return null;
         }
 
         // First add the elem to the new expiry time bucket in expiryMap.
+        // 第一次，在expiryMap中  将元素添加到新的过期时间中
         Set<E> set = expiryMap.get(newExpiryTime);
         if (set == null) {
             // Construct a ConcurrentHashSet using a ConcurrentHashMap
@@ -123,6 +145,7 @@ public class ExpiryQueue<E> {
 
     /**
      * @return milliseconds until next expiration time, or 0 if has already past
+     *          距离过期时间 还有多长时间
      */
     public long getWaitTime() {
         long now = Time.currentElapsedTime();
@@ -134,6 +157,8 @@ public class ExpiryQueue<E> {
      * Remove the next expired set of elements from expireMap. This method needs
      * to be called frequently enough by checking getWaitTime(), otherwise there
      * will be a backlog of empty sets queued up in expiryMap.
+     * 移除过期元素，并
+     * 移除过期元素，并将已经删除的元素返回
      *
      * @return next set of expired elements, or an empty set if none are
      *         ready
@@ -147,8 +172,7 @@ public class ExpiryQueue<E> {
 
         Set<E> set = null;
         long newExpirationTime = expirationTime + expirationInterval;
-        if (nextExpirationTime.compareAndSet(
-              expirationTime, newExpirationTime)) {
+        if (nextExpirationTime.compareAndSet(expirationTime, newExpirationTime)) {
             set = expiryMap.remove(expirationTime);
         }
         if (set == null) {
@@ -157,6 +181,10 @@ public class ExpiryQueue<E> {
         return set;
     }
 
+    /**
+     * 将信息打印到PrintWriter中
+     * @param pwriter
+     */
     public void dump(PrintWriter pwriter) {
         pwriter.print("Sets (");
         pwriter.print(expiryMap.size());

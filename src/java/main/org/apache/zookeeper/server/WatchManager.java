@@ -180,7 +180,7 @@ class WatchManager {
 
     /**
      * Checks the specified watcher exists for the given path
-     *
+     * 对给定的路径，检查特殊的watcher是否存在
      * @param path
      *            znode path
      * @param watcher

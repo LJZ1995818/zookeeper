@@ -145,6 +145,10 @@ public class ServerStats {
     synchronized public void incrementPacketsReceived() {
         packetsReceived++;
     }
+
+    /**
+     * 增加服务的数据包发送包数
+     */
     synchronized public void incrementPacketsSent() {
         packetsSent++;
     }

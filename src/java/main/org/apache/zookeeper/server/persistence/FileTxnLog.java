@@ -165,7 +165,7 @@ public class FileTxnLog implements TxnLog {
 
 
     /**
-     * rollover the current log file to a new one.
+     * 将当前日志文件翻转到一个新日志文件
      * @throws IOException
      */
     public synchronized void rollLog() throws IOException {
@@ -346,7 +346,7 @@ public class FileTxnLog implements TxnLog {
             if (forceSync) {
                 long startSyncNS = System.nanoTime();
 
-                log.getChannel().force(false);
+                log.getChannel().force(false);// 将通道里尚未写入磁盘的数据强制写到磁盘上
 
                 syncElapsedMS = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startSyncNS);
                 if (syncElapsedMS > fsyncWarningThresholdMS) {

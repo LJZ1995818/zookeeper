@@ -164,6 +164,9 @@ public class FourLetterCommands {
 
     private static final Map<Integer, String> cmd2String = new HashMap<Integer, String>();
 
+    /**
+     * 白名单 命令 列表
+     */
     private static final Set<String> whiteListedCommands = new HashSet<String>();
 
     private static boolean whiteListInitialized = false;
@@ -198,7 +201,7 @@ public class FourLetterCommands {
      * allow a specific set of white listed commands to execute.
      * A command will only be executed if it is also configured
      * in the white list.
-     *
+     * 判断 四字节命令是否存在
      * @param command The command string.
      * @return true if the specified command is enabled
      */
@@ -237,6 +240,7 @@ public class FourLetterCommands {
     }
 
     // specify all of the commands that are available
+    // 指定所有可用的命令
     static {
         cmd2String.put(confCmd, "conf");
         cmd2String.put(consCmd, "cons");

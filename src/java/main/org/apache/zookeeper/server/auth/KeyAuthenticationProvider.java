@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -79,36 +79,44 @@ public class KeyAuthenticationProvider extends ServerAuthenticationProvider {
             String authStr = new String(auth, "UTF-8");
             int keyVal = Integer.parseInt(keyStr);
             int authVal = Integer.parseInt(authStr);
-            if (keyVal!=0 && ((authVal % keyVal) != 0)) {
-              return false;
+            if (keyVal != 0 && ((authVal % keyVal) != 0)) {
+                return false;
             }
         } catch (NumberFormatException | UnsupportedEncodingException nfe) {
             LOG.error("bad formatting", nfe);
-          return false;
+            return false;
         }
         return true;
     }
 
+    /**
+     * 从/key节点中获取  key（int）值,判断是否整除，如果整除除，授权成功
+     * @param serverObjs
+     *                cnxn/server/etc that received the authentication information.
+     * @param authData
+     *                the authentication data received.
+     * @return
+     */
     @Override
     public KeeperException.Code handleAuthentication(ServerObjs serverObjs, byte[] authData) {
         byte[] key = getKey(serverObjs.getZks());
         String authStr = "";
         String keyStr = "";
         try {
-          authStr = new String(authData, "UTF-8");
+            authStr = new String(authData, "UTF-8");
         } catch (Exception e) {
             LOG.error("UTF-8", e);
         }
         if (key != null) {
             if (!validate(key, authData)) {
                 try {
-                  keyStr = new String(key, "UTF-8");
+                    keyStr = new String(key, "UTF-8");
                 } catch (Exception e) {
                     LOG.error("UTF-8", e);
                     // empty key
                     keyStr = authStr;
                 }
-                LOG.debug("KeyAuthenticationProvider handleAuthentication ("+keyStr+", "+authStr+") -> FAIL.\n");
+                LOG.debug("KeyAuthenticationProvider handleAuthentication (" + keyStr + ", " + authStr + ") -> FAIL.\n");
                 return KeeperException.Code.AUTHFAILED;
             }
         }

@@ -169,11 +169,15 @@ public abstract class ServerCnxnFactory {
 
     public abstract Iterable<Map<String, Object>> getAllConnectionInfo(boolean brief);
 
+    /**
+     * 维护cnxn的连接bean
+     */
     private final ConcurrentHashMap<ServerCnxn, ConnectionBean> connectionBeans =
             new ConcurrentHashMap<>();
 
     // Connection set is relied on heavily by four letter commands
     // Construct a ConcurrentHashSet using a ConcurrentHashMap
+    // 当前的cnxnFactory的所有cnxn集合
     protected final Set<ServerCnxn> cnxns = Collections.newSetFromMap(
         new ConcurrentHashMap<ServerCnxn, Boolean>());
 

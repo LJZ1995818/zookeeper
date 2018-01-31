@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -80,7 +80,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 树维护两个并行数据结构:一个映射的散列表
  * DataNodes和DataNodes树的完整路径。所有对路径的访问都是
  * 通过哈希表。树只有在序列化到磁盘时才被遍历。
- * 
+ *
  */
 public class DataTree {
     private static final Logger LOG = LoggerFactory.getLogger(DataTree.class);
@@ -90,7 +90,7 @@ public class DataTree {
      * source of truth and is where all the locking occurs
      */
     private final ConcurrentHashMap<String, DataNode> nodes =
-        new ConcurrentHashMap<String, DataNode>();
+            new ConcurrentHashMap<String, DataNode>();
 
     private final WatchManager dataWatches = new WatchManager();
 
@@ -140,7 +140,7 @@ public class DataTree {
      * This hashtable lists the paths of the ephemeral nodes of a session.
      */
     private final Map<Long, HashSet<String>> ephemerals =
-        new ConcurrentHashMap<Long, HashSet<String>>();
+            new ConcurrentHashMap<Long, HashSet<String>>();
 
     /**
      * This set contains the paths of all container nodes
@@ -354,9 +354,9 @@ public class DataTree {
         }
         if (thisStats.getCount() > -1 && (thisStats.getCount() < updatedStat.getCount())) {
             LOG
-            .warn("Quota exceeded: " + lastPrefix + " count="
-                    + updatedStat.getCount() + " limit="
-                    + thisStats.getCount());
+                    .warn("Quota exceeded: " + lastPrefix + " count="
+                            + updatedStat.getCount() + " limit="
+                            + thisStats.getCount());
         }
     }
 
@@ -398,9 +398,9 @@ public class DataTree {
         }
         if (thisStats.getBytes() > -1 && (thisStats.getBytes() < updatedStat.getBytes())) {
             LOG
-            .warn("Quota exceeded: " + lastPrefix + " bytes="
-                    + updatedStat.getBytes() + " limit="
-                    + thisStats.getBytes());
+                    .warn("Quota exceeded: " + lastPrefix + " bytes="
+                            + updatedStat.getBytes() + " limit="
+                            + thisStats.getBytes());
         }
     }
 
@@ -423,9 +423,9 @@ public class DataTree {
      * @throws KeeperException
      */
     public void createNode(final String path, byte data[], List<ACL> acl,
-            long ephemeralOwner, int parentCVersion, long zxid, long time)
-    		throws NoNodeException, NodeExistsException {
-    	createNode(path, data, acl, ephemeralOwner, parentCVersion, zxid, time, null);
+                           long ephemeralOwner, int parentCVersion, long zxid, long time)
+            throws NoNodeException, NodeExistsException {
+        createNode(path, data, acl, ephemeralOwner, parentCVersion, zxid, time, null);
     }
 
     /**
@@ -450,8 +450,8 @@ public class DataTree {
      * @throws KeeperException
      */
     public void createNode(final String path, byte data[], List<ACL> acl,
-            long ephemeralOwner, int parentCVersion, long zxid, long time, Stat outputStat)
-            throws KeeperException.NoNodeException,KeeperException.NodeExistsException {
+                           long ephemeralOwner, int parentCVersion, long zxid, long time, Stat outputStat)
+            throws KeeperException.NoNodeException, KeeperException.NodeExistsException {
         int lastSlash = path.lastIndexOf('/');
         String parentName = path.substring(0, lastSlash);
         String childName = path.substring(lastSlash + 1);
@@ -501,7 +501,7 @@ public class DataTree {
                 }
             }
             if (outputStat != null) {
-            	child.copyStat(outputStat);
+                child.copyStat(outputStat);
             }
         }
         // now check if its one of the zookeeper node child
@@ -520,7 +520,7 @@ public class DataTree {
         // also check to update the quotas for this node
         // 也需要检查  这个节点的定额状态
         String lastPrefix = getMaxPrefixWithQuota(path);
-        if(lastPrefix != null) {
+        if (lastPrefix != null) {
             // ok we have some match and need to update
             updateCount(lastPrefix, 1);
             updateBytes(lastPrefix, data == null ? 0 : data.length);
@@ -582,7 +582,7 @@ public class DataTree {
 
         // also check to update the quotas for this node
         String lastPrefix = getMaxPrefixWithQuota(path);
-        if(lastPrefix != null) {
+        if (lastPrefix != null) {
             // ok we have some match and need to update
             updateCount(lastPrefix, -1);
             int bytes = 0;
@@ -605,7 +605,7 @@ public class DataTree {
     }
 
     public Stat setData(String path, byte data[], int version, long zxid,
-            long time) throws KeeperException.NoNodeException {
+                        long time) throws KeeperException.NoNodeException {
         Stat s = new Stat();
         DataNode n = nodes.get(path);
         if (n == null) {
@@ -622,9 +622,9 @@ public class DataTree {
         }
         // now update if the path is in a quota subtree.
         String lastPrefix = getMaxPrefixWithQuota(path);
-        if(lastPrefix != null) {
-          this.updateBytes(lastPrefix, (data == null ? 0 : data.length)
-              - (lastdata == null ? 0 : lastdata.length));
+        if (lastPrefix != null) {
+            this.updateBytes(lastPrefix, (data == null ? 0 : data.length)
+                    - (lastdata == null ? 0 : lastdata.length));
         }
         dataWatches.triggerWatch(path, EventType.NodeDataChanged);
         return s;
@@ -644,8 +644,7 @@ public class DataTree {
 
         if (rootZookeeper.equals(lastPrefix) || "".equals(lastPrefix)) {
             return null;
-        }
-        else {
+        } else {
             return lastPrefix;
         }
     }
@@ -691,7 +690,7 @@ public class DataTree {
             if (stat != null) {
                 n.copyStat(stat);
             }
-            List<String> children=new ArrayList<String>(n.getChildren());
+            List<String> children = new ArrayList<String>(n.getChildren());
 
             if (watcher != null) {
                 childWatches.addWatch(path, watcher);
@@ -794,8 +793,7 @@ public class DataTree {
      * @param txn 日志事务内容
      * @return
      */
-    public ProcessTxnResult processTxn(TxnHeader header, Record txn)
-    {
+    public ProcessTxnResult processTxn(TxnHeader header, Record txn) {
         ProcessTxnResult rc = new ProcessTxnResult();
 
         try {
@@ -888,7 +886,7 @@ public class DataTree {
                     rc.path = checkTxn.getPath();
                     break;
                 case OpCode.multi:
-                    MultiTxn multiTxn = (MultiTxn) txn ;
+                    MultiTxn multiTxn = (MultiTxn) txn;
                     List<Txn> txns = multiTxn.getTxns();
                     rc.multiResult = new ArrayList<ProcessTxnResult>();
                     boolean failed = false;
@@ -930,29 +928,29 @@ public class DataTree {
                             default:
                                 throw new IOException("Invalid type of op: " + subtxn.getType());
                         }
-                        assert(record != null);
+                        assert (record != null);
 
                         ByteBufferInputStream.byteBuffer2Record(bb, record);
 
-                        if (failed && subtxn.getType() != OpCode.error){
+                        if (failed && subtxn.getType() != OpCode.error) {
                             int ec = post_failed ? Code.RUNTIMEINCONSISTENCY.intValue()
-                                                 : Code.OK.intValue();
+                                    : Code.OK.intValue();
 
                             subtxn.setType(OpCode.error);
                             record = new ErrorTxn(ec);
                         }
 
                         if (failed) {
-                            assert(subtxn.getType() == OpCode.error) ;
+                            assert (subtxn.getType() == OpCode.error);
                         }
 
                         TxnHeader subHdr = new TxnHeader(header.getClientId(), header.getCxid(),
-                                                         header.getZxid(), header.getTime(),
-                                                         subtxn.getType());
+                                header.getZxid(), header.getTime(),
+                                subtxn.getType());
                         ProcessTxnResult subRc = processTxn(subHdr, record);
                         rc.multiResult.add(subRc);
                         if (subRc.err != 0 && rc.err == 0) {
-                            rc.err = subRc.err ;
+                            rc.err = subRc.err;
                         }
                     }
                     break;
@@ -980,6 +978,7 @@ public class DataTree {
          * lastProcessedZxid.  During restore, we correctly handle the
          * case where the snapshot contains data ahead of the zxid associated
          * with the file.
+         * 更新最新的处理请求的zxid
          */
         if (rc.zxid > lastProcessedZxid) {
             lastProcessedZxid = rc.zxid;
@@ -1005,18 +1004,18 @@ public class DataTree {
                     " path:" + rc.path + " err: " + rc.err);
             int lastSlash = rc.path.lastIndexOf('/');
             String parentName = rc.path.substring(0, lastSlash);
-            CreateTxn cTxn = (CreateTxn)txn;
+            CreateTxn cTxn = (CreateTxn) txn;
             try {
                 setCversionPzxid(parentName, cTxn.getParentCVersion(),
                         header.getZxid());
             } catch (KeeperException.NoNodeException e) {
                 LOG.error("Failed to set parent cversion for: " +
-                      parentName, e);
+                        parentName, e);
                 rc.err = e.code().intValue();
             }
         } else if (rc.err != Code.OK.intValue()) {
             LOG.debug("Ignoring processTxn failure hdr: " + header.getType() +
-                  " : error: " + rc.err);
+                    " : error: " + rc.err);
         }
         return rc;
     }
@@ -1038,8 +1037,8 @@ public class DataTree {
                     deleteNode(path, zxid);
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Deleting ephemeral node " + path
-                                        + " for session 0x"
-                                        + Long.toHexString(session));
+                                + " for session 0x"
+                                + Long.toHexString(session));
                     }
                 } catch (NoNodeException e) {
                     LOG.warn("Ignoring NoNodeException for path " + path
@@ -1114,7 +1113,7 @@ public class DataTree {
     /**
      * this method traverses the quota path and update the path trie and sets
      * 此方法遍历配额路径并更新路径线索并设置
-     * 
+     *
      * @param path
      */
     private void traverseNode(String path) {
@@ -1352,70 +1351,70 @@ public class DataTree {
      * 根据节点的存在情况或者zxid，触发watcher或者添加watcher
      */
     public void setWatches(long relativeZxid, List<String> dataWatches,
-            List<String> existWatches, List<String> childWatches,
-            Watcher watcher) {
-        for (String path : dataWatches) {
+                           List<String> existWatches, List<String> childWatches,
+                           Watcher watcher) {
+        for (String path : dataWatches) {// data监听器
             DataNode node = getNode(path);
             if (node == null) {
                 watcher.process(new WatchedEvent(EventType.NodeDeleted,
-                            KeeperState.SyncConnected, path));
+                        KeeperState.SyncConnected, path));
             } else if (node.stat.getMzxid() > relativeZxid) {
                 watcher.process(new WatchedEvent(EventType.NodeDataChanged,
-                            KeeperState.SyncConnected, path));
+                        KeeperState.SyncConnected, path));
             } else {
                 this.dataWatches.addWatch(path, watcher);
             }
         }
-        for (String path : existWatches) {
+        for (String path : existWatches) {// 存在监听器
             DataNode node = getNode(path);
             if (node != null) {
                 watcher.process(new WatchedEvent(EventType.NodeCreated,
-                            KeeperState.SyncConnected, path));
+                        KeeperState.SyncConnected, path));
             } else {
                 this.dataWatches.addWatch(path, watcher);
             }
         }
-        for (String path : childWatches) {
+        for (String path : childWatches) {// 子节点监听器
             DataNode node = getNode(path);
             if (node == null) {
                 watcher.process(new WatchedEvent(EventType.NodeDeleted,
-                            KeeperState.SyncConnected, path));
+                        KeeperState.SyncConnected, path));
             } else if (node.stat.getPzxid() > relativeZxid) {
                 watcher.process(new WatchedEvent(EventType.NodeChildrenChanged,
-                            KeeperState.SyncConnected, path));
+                        KeeperState.SyncConnected, path));
             } else {
                 this.childWatches.addWatch(path, watcher);
             }
         }
     }
 
-     /**
-      * This method sets the Cversion and Pzxid for the specified node to the
-      * values passed as arguments. The values are modified only if newCversion
-      * is greater than the current Cversion. A NoNodeException is thrown if
-      * a znode for the specified path is not found.
-      *
-      * @param path
-      *     Full path to the znode whose Cversion needs to be modified.
-      *     A "/" at the end of the path is ignored.
-      * @param newCversion
-      *     Value to be assigned to Cversion
-      * @param zxid
-      *     Value to be assigned to Pzxid
-      * @throws KeeperException.NoNodeException
-      *     If znode not found.
-      **/
+    /**
+     * This method sets the Cversion and Pzxid for the specified node to the
+     * values passed as arguments. The values are modified only if newCversion
+     * is greater than the current Cversion. A NoNodeException is thrown if
+     * a znode for the specified path is not found.
+     *
+     * @param path
+     *     Full path to the znode whose Cversion needs to be modified.
+     *     A "/" at the end of the path is ignored.
+     * @param newCversion
+     *     Value to be assigned to Cversion
+     * @param zxid
+     *     Value to be assigned to Pzxid
+     * @throws KeeperException.NoNodeException
+     *     If znode not found.
+     **/
     public void setCversionPzxid(String path, int newCversion, long zxid)
-        throws KeeperException.NoNodeException {
+            throws KeeperException.NoNodeException {
         if (path.endsWith("/")) {
-           path = path.substring(0, path.length() - 1);
+            path = path.substring(0, path.length() - 1);
         }
         DataNode node = nodes.get(path);
         if (node == null) {
             throw new KeeperException.NoNodeException(path);
         }
         synchronized (node) {
-            if(newCversion == -1) {
+            if (newCversion == -1) {
                 newCversion = node.stat.getCversion() + 1;
             }
             if (newCversion > node.stat.getCversion()) {
@@ -1425,23 +1424,30 @@ public class DataTree {
         }
     }
 
+    /**
+     * 判断是否包含watcher
+     * @param path
+     * @param type
+     * @param watcher
+     * @return
+     */
     public boolean containsWatcher(String path, WatcherType type, Watcher watcher) {
         boolean containsWatcher = false;
         switch (type) {
-        case Children:
-            containsWatcher = this.childWatches.containsWatcher(path, watcher);
-            break;
-        case Data:
-            containsWatcher = this.dataWatches.containsWatcher(path, watcher);
-            break;
-        case Any:
-            if (this.childWatches.containsWatcher(path, watcher)) {
-                containsWatcher = true;
-            }
-            if (this.dataWatches.containsWatcher(path, watcher)) {
-                containsWatcher = true;
-            }
-            break;
+            case Children:
+                containsWatcher = this.childWatches.containsWatcher(path, watcher);
+                break;
+            case Data:
+                containsWatcher = this.dataWatches.containsWatcher(path, watcher);
+                break;
+            case Any:
+                if (this.childWatches.containsWatcher(path, watcher)) {
+                    containsWatcher = true;
+                }
+                if (this.dataWatches.containsWatcher(path, watcher)) {
+                    containsWatcher = true;
+                }
+                break;
         }
         return containsWatcher;
     }
@@ -1449,20 +1455,20 @@ public class DataTree {
     public boolean removeWatch(String path, WatcherType type, Watcher watcher) {
         boolean removed = false;
         switch (type) {
-        case Children:
-            removed = this.childWatches.removeWatcher(path, watcher);
-            break;
-        case Data:
-            removed = this.dataWatches.removeWatcher(path, watcher);
-            break;
-        case Any:
-            if (this.childWatches.removeWatcher(path, watcher)) {
-                removed = true;
-            }
-            if (this.dataWatches.removeWatcher(path, watcher)) {
-                removed = true;
-            }
-            break;
+            case Children:
+                removed = this.childWatches.removeWatcher(path, watcher);
+                break;
+            case Data:
+                removed = this.dataWatches.removeWatcher(path, watcher);
+                break;
+            case Any:
+                if (this.childWatches.removeWatcher(path, watcher)) {
+                    removed = true;
+                }
+                if (this.dataWatches.removeWatcher(path, watcher)) {
+                    removed = true;
+                }
+                break;
         }
         return removed;
     }

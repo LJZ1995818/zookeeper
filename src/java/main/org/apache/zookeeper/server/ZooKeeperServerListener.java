@@ -18,7 +18,7 @@
 package org.apache.zookeeper.server;
 
 /**
- * Listener for the critical resource events.
+ * 关键资源事件侦听器。
  */
 public interface ZooKeeperServerListener {
 

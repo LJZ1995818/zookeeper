@@ -73,7 +73,7 @@ public abstract class ServerCnxn implements Stats, Watcher {
 
     abstract void setSessionId(long sessionId);
 
-    /** auth info for the cnxn, returns an unmodifyable list */
+    /** cnxn的认证信息，不可被修改 */
     public List<Id> getAuthInfo() {
         return Collections.unmodifiableList(new ArrayList<>(authInfo));
     }
@@ -116,6 +116,9 @@ public abstract class ServerCnxn implements Stats, Watcher {
         }
     }
 
+    /**
+     * 增加数据包接受数
+     */
     protected void packetReceived() {
         incrPacketsReceived();
         ServerStats serverStats = serverStats();
@@ -124,6 +127,9 @@ public abstract class ServerCnxn implements Stats, Watcher {
         }
     }
 
+    /**
+     * 对数据包的发送数目进行增加，包括cnxn 和 服务数
+     */
     protected void packetSent() {
         incrPacketsSent();
         ServerStats serverStats = serverStats();
@@ -172,12 +178,16 @@ public abstract class ServerCnxn implements Stats, Watcher {
     protected void incrOutstandingRequests(RequestHeader h) {
     }
 
+    /**
+     * 增加此cnxn数据包的发送数
+     * @return
+     */
     protected long incrPacketsSent() {
         return packetsSent.incrementAndGet();
     }
 
     /**
-     * 用于获取连接信息而做的更新
+     * 用于获取连接信息而做的更新  cnxn级别的更新
      */
     protected synchronized void updateStatsForResponse(long cxid, long zxid,
             String op, long start, long end)
@@ -251,7 +261,7 @@ public abstract class ServerCnxn implements Stats, Watcher {
     /**
      * Prints detailed stats information for the connection.
      *
-     * @see dumpConnectionInfo(PrintWriter, boolean) for brief stats
+     * @see (PrintWriter, boolean) for brief stats
      */
     @Override
     public String toString() {
@@ -349,7 +359,7 @@ public abstract class ServerCnxn implements Stats, Watcher {
     /**
      * clean up the socket related to a command and also make sure we flush the
      * data before we do that
-     *
+     * 清理与命令相关的套接字，并确保在进行数据之前刷新数据。
      * @param pwriter
      *            the pwriter for a command socket
      */

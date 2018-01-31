@@ -41,6 +41,9 @@ import org.slf4j.LoggerFactory;
  * interval. It always rounds up the tick interval to provide a sort of grace
  * period. Sessions are thus expired in batches made up of sessions that expire
  * in a given interval.
+ * 这是一个全功能的sessiontracker。它以滴答时间间隔分组会话。
+ * 它总是在tick声周期内提供一种宽限期。
+ * 因此，会话是在一个给定的时间间隔内到期的会话中分批完成的。
  */
 public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
         SessionTracker {
@@ -54,6 +57,9 @@ public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
     private final ConcurrentMap<Long, Integer> sessionsWithTimeout;
     private final AtomicLong nextSessionId = new AtomicLong();
 
+    /**
+     * session的实现类 包括id 过期时间 是否是关闭中
+     */
     public static class SessionImpl implements Session {
         SessionImpl(long sessionId, int timeout) {
             this.sessionId = sessionId;
@@ -87,6 +93,8 @@ public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
     /**
      * Generates an initial sessionId. High order byte is serverId, next 5
      * 5 bytes are from timestamp, and low order 2 bytes are 0s.
+     * 生成一个初始的SessionID。
+     * 生成规则：高字节serverid，接下来的5个5字节的时间戳，和低阶2字节0。
      */
     public static long initializeNextSession(long id) {
         long nextSid;
@@ -144,6 +152,9 @@ public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
         return sw.toString();
     }
 
+    /**
+     * 对过期的session进行移除处理
+     */
     @Override
     public void run() {
         try {
@@ -155,8 +166,8 @@ public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
                 }
 
                 for (SessionImpl s : sessionExpiryQueue.poll()) {
-                    setSessionClosing(s.sessionId);
-                    expirer.expire(s);
+                    setSessionClosing(s.sessionId);// 设置正在关闭
+                    expirer.expire(s);// 处理过期的session，即向客户端发送关闭请求
                 }
             }
         } catch (InterruptedException e) {
@@ -165,6 +176,12 @@ public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
         LOG.info("SessionTrackerImpl exited loop!");
     }
 
+    /**
+     * 触发session，并记录初始化、关闭日志，或者更新过期时间
+     * @param sessionId
+     * @param timeout
+     * @return 如果session正在关闭或者未初始化，则返回false，否则返回true，随便更新session的过期时间
+     */
     synchronized public boolean touchSession(long sessionId, int timeout) {
         SessionImpl s = sessionsById.get(sessionId);
 
@@ -182,11 +199,22 @@ public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
         return true;
     }
 
+    /**
+     * 更新session的过期时间
+     * @param s
+     * @param timeout
+     */
     private void updateSessionExpiry(SessionImpl s, int timeout) {
         logTraceTouchSession(s.sessionId, timeout, "");
         sessionExpiryQueue.update(s, timeout);
     }
 
+    /**
+     * 记录session状态信息
+     * @param sessionId
+     * @param timeout
+     * @param sessionStatus
+     */
     private void logTraceTouchSession(long sessionId, int timeout, String sessionStatus) {
         if (!LOG.isTraceEnabled())
             return;
@@ -198,10 +226,20 @@ public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
         ZooTrace.logTraceMessage(LOG, ZooTrace.CLIENT_PING_TRACE_MASK, msg);
     }
 
+    /**
+     * 记录session初始化信息
+     * @param sessionId
+     * @param timeout
+     */
     private void logTraceTouchInvalidSession(long sessionId, int timeout) {
         logTraceTouchSession(sessionId, timeout, "invalid ");
     }
 
+    /**
+     * 记录session关闭信息
+     * @param sessionId
+     * @param timeout
+     */
     private void logTraceTouchClosingSession(long sessionId, int timeout) {
         logTraceTouchSession(sessionId, timeout, "closing ");
     }
@@ -210,6 +248,10 @@ public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
         return sessionsWithTimeout.get(sessionId);
     }
 
+    /**
+     * 将session设置为closing ，但是不表示以及销毁session
+     * @param sessionId
+     */
     synchronized public void setSessionClosing(long sessionId) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("Session closing: 0x" + Long.toHexString(sessionId));
@@ -255,6 +297,12 @@ public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
         return addSession(id, sessionTimeout);
     }
 
+    /**
+     * 更新或者添加session到 sessionsWithTimeout和 sessionsById
+     * @param id sessionId
+     * @param sessionTimeout
+     * @return
+     */
     public synchronized boolean addSession(long id, int sessionTimeout) {
         sessionsWithTimeout.put(id, sessionTimeout);
 
@@ -291,6 +339,14 @@ public class SessionTrackerImpl extends ZooKeeperCriticalThread implements
         return sessionsById.containsKey(sessionId);
     }
 
+    /**
+     * 检查session是否正常
+     * @param sessionId
+     * @param owner
+     * @throws KeeperException.SessionExpiredException
+     * @throws KeeperException.SessionMovedException
+     * @throws KeeperException.UnknownSessionException
+     */
     public synchronized void checkSession(long sessionId, Object owner)
             throws KeeperException.SessionExpiredException,
             KeeperException.SessionMovedException,

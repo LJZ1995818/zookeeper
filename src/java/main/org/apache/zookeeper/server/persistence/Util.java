@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,40 +48,41 @@ import org.apache.zookeeper.txn.TxnHeader;
  */
 public class Util {
     private static final Logger LOG = LoggerFactory.getLogger(Util.class);
-    private static final String SNAP_DIR="snapDir";
-    private static final String LOG_DIR="logDir";
-    private static final String DB_FORMAT_CONV="dbFormatConversion";
+    private static final String SNAP_DIR = "snapDir";
+    private static final String LOG_DIR = "logDir";
+    private static final String DB_FORMAT_CONV = "dbFormatConversion";
     private static final ByteBuffer fill = ByteBuffer.allocateDirect(1);
-    
-    public static String makeURIString(String dataDir, String dataLogDir, 
-            String convPolicy){
-        String uri="file:"+SNAP_DIR+"="+dataDir+";"+LOG_DIR+"="+dataLogDir;
-        if(convPolicy!=null)
-            uri+=";"+DB_FORMAT_CONV+"="+convPolicy;
+
+    public static String makeURIString(String dataDir, String dataLogDir,
+                                       String convPolicy) {
+        String uri = "file:" + SNAP_DIR + "=" + dataDir + ";" + LOG_DIR + "=" + dataLogDir;
+        if (convPolicy != null)
+            uri += ";" + DB_FORMAT_CONV + "=" + convPolicy;
         return uri.replace('\\', '/');
     }
+
     /**
      * Given two directory files the method returns a well-formed 
      * logfile provider URI. This method is for backward compatibility with the
      * existing code that only supports logfile persistence and expects these two
      * parameters passed either on the command-line or in the configuration file.
-     * 
+     *
      * @param dataDir snapshot directory
      * @param dataLogDir transaction log directory
      * @return logfile provider URI
      */
-    public static URI makeFileLoggerURL(File dataDir, File dataLogDir){
-        return URI.create(makeURIString(dataDir.getPath(),dataLogDir.getPath(),null));
+    public static URI makeFileLoggerURL(File dataDir, File dataLogDir) {
+        return URI.create(makeURIString(dataDir.getPath(), dataLogDir.getPath(), null));
     }
-    
-    public static URI makeFileLoggerURL(File dataDir, File dataLogDir,String convPolicy){
-        return URI.create(makeURIString(dataDir.getPath(),dataLogDir.getPath(),convPolicy));
+
+    public static URI makeFileLoggerURL(File dataDir, File dataLogDir, String convPolicy) {
+        return URI.create(makeURIString(dataDir.getPath(), dataLogDir.getPath(), convPolicy));
     }
 
     /**
      * Creates a valid transaction log file name. 
      * 创建一个有效的事务日志文件名称（log  开头）
-     * 
+     *
      * @param zxid used as a file name suffix (extension)
      * @return file name
      */
@@ -92,49 +93,49 @@ public class Util {
     /**
      * Creates a snapshot file name.
      * 创建一个快照文件（snapshot 开头）
-     * 
+     *
      * @param zxid used as a suffix
      * @return file name
      */
     public static String makeSnapshotName(long zxid) {
         return "snapshot." + Long.toHexString(zxid);
     }
-    
+
     /**
      * Extracts snapshot directory property value from the container.
-     * 
+     *
      * @param props properties container
      * @return file representing the snapshot directory
      */
-    public static File getSnapDir(Properties props){
+    public static File getSnapDir(Properties props) {
         return new File(props.getProperty(SNAP_DIR));
     }
 
     /**
      * Extracts transaction log directory property value from the container.
-     * 
+     *
      * @param props properties container
      * @return file representing the txn log directory
      */
-    public static File getLogDir(Properties props){
+    public static File getLogDir(Properties props) {
         return new File(props.getProperty(LOG_DIR));
     }
-    
+
     /**
      * Extracts the value of the dbFormatConversion attribute.
-     * 
+     *
      * @param props properties container
      * @return value of the dbFormatConversion attribute
      */
-    public static String getFormatConversionPolicy(Properties props){
+    public static String getFormatConversionPolicy(Properties props) {
         return props.getProperty(DB_FORMAT_CONV);
     }
-   
+
     /**
      * Extracts zxid from the file name. The file name should have been created
      * using one of the {@link #makeLogName(long)} or {@link #makeSnapshotName(long)}.
      * 从文件名中提取zxid，这个文件名应该是通过makeLogName或者makeSnapshotName 创建的
-     * 
+     *
      * @param name the file name to parse
      * @param prefix the file name prefix (snapshot or log)
      * @return zxid
@@ -164,7 +165,7 @@ public class Util {
      * @throws IOException
      */
     public static boolean isValidSnapshot(File f) throws IOException {
-        if (f==null || Util.getZxidFromName(f.getName(), "snapshot") == -1)
+        if (f == null || Util.getZxidFromName(f.getName(), "snapshot") == -1)
             return false;
 
         // Check for a valid snapshot
@@ -205,7 +206,7 @@ public class Util {
      * the current file position is sufficiently close (less than 4K) to end of 
      * file. 
      * 如果当前文件的位置是足够接近 (少于 4K) 结束文件，将文件增长到指定的字节数.
-     * 
+     *
      * @param f output stream to pad
      * @param currentSize application keeps track of the current file size
      * @param preAllocSize how many bytes to pad
@@ -213,13 +214,13 @@ public class Util {
      * padding was done.
      * @throws IOException
      */
-    public static long padLogFile(FileOutputStream f,long currentSize,
-            long preAllocSize) throws IOException{
+    public static long padLogFile(FileOutputStream f, long currentSize,
+                                  long preAllocSize) throws IOException {
         long position = f.getChannel().position();
         if (position + 4096 >= currentSize) {
             currentSize = currentSize + preAllocSize;
             fill.position(0);
-            f.getChannel().write(fill, currentSize-fill.remaining());
+            f.getChannel().write(fill, currentSize - fill.remaining());
         }
         return currentSize;
     }
@@ -233,7 +234,7 @@ public class Util {
      * @throws IOException
      */
     public static byte[] readTxnBytes(InputArchive ia) throws IOException {
-        try{
+        try {
             byte[] bytes = ia.readBuffer("txtEntry");
             // Since we preallocate, we define EOF to be an
             // empty transaction
@@ -244,15 +245,16 @@ public class Util {
                 return null;
             }
             return bytes;
-        }catch(EOFException e){}
+        } catch (EOFException e) {
+        }
         return null;
     }
-    
+
 
     /**
      * Serializes transaction header and transaction data into a byte buffer.
      * 将事务头和事务数据序列化为字节缓冲区。
-     * 
+     *
      * @param hdr transaction header
      * @param txn transaction data
      * @return serialized transaction record
@@ -282,16 +284,15 @@ public class Util {
         oa.writeBuffer(bytes, "txnEntry");
         oa.writeByte((byte) 0x42, "EOR"); // 'B'
     }
-    
-    
+
+
     /**
      * Compare file file names of form "prefix.version". Sort order result
      * returned in order of version.
      * 比较文件名称，格式:prefix.version.按照顺序结果按版本顺序返回
      */
     private static class DataDirFileComparator
-        implements Comparator<File>, Serializable
-    {
+            implements Comparator<File>, Serializable {
         private static final long serialVersionUID = -2648639884525140318L;
 
         private String prefix;
@@ -313,7 +314,7 @@ public class Util {
             return ascending ? result : -result;
         }
     }
-    
+
     /**
      * Sort the list of files. Recency as determined by the version component
      * of the file name.
@@ -326,13 +327,12 @@ public class Util {
      * descending order
      * @return sorted input files
      */
-    public static List<File> sortDataDir(File[] files, String prefix, boolean ascending)
-    {
-        if(files==null)
+    public static List<File> sortDataDir(File[] files, String prefix, boolean ascending) {
+        if (files == null)
             return new ArrayList<File>(0);
         List<File> filelist = Arrays.asList(files);
         Collections.sort(filelist, new DataDirFileComparator(prefix, ascending));
         return filelist;
     }
-    
+
 }

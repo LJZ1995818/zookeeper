@@ -22,6 +22,9 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.server.ServerCnxn;
 
+/**
+ *
+ */
 public class IPAuthenticationProvider implements AuthenticationProvider {
 
     public String getScheme() {
@@ -38,6 +41,7 @@ public class IPAuthenticationProvider implements AuthenticationProvider {
 
     // This is a bit weird but we need to return the address and the number of
     // bytes (to distinguish between IPv4 and IPv6
+    // 为了用于ipv6的扩展
     private byte[] addr2Bytes(String addr) {
         byte b[] = v4addr2Bytes(addr);
         // TODO Write the v6addr2Bytes
@@ -65,6 +69,11 @@ public class IPAuthenticationProvider implements AuthenticationProvider {
         return b;
     }
 
+    /**
+     * 貌似是坐掩码处理
+     * @param b ip
+     * @param bits 权限
+     */
     private void mask(byte b[], int bits) {
         int start = bits / 8;
         int startMask = (1 << (8 - (bits % 8))) - 1;

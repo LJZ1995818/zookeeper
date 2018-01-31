@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * Set of threads for command ports. All the 4 letter commands are run via a
  * thread. Each class maps to a correspoding 4 letter command. CommandThread is
  * the abstract class from which all the others inherit.
+ * 四字节命令的基类
  */
 public abstract class AbstractFourLetterCommand {
     private static final Logger LOG = LoggerFactory

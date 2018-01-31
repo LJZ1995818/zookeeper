@@ -42,7 +42,7 @@ class WrappedAuthenticationProvider extends ServerAuthenticationProvider {
 
     /**
      * {@inheritDoc}
-     *
+     * 包装
      * forwards to older method {@link #handleAuthentication(ServerCnxn, byte[])}
      */
     @Override
@@ -52,7 +52,7 @@ class WrappedAuthenticationProvider extends ServerAuthenticationProvider {
 
     /**
      * {@inheritDoc}
-     *
+     * 包装
      * forwards to older method {@link #matches(String, String)}
      */
     @Override
