@@ -24,7 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Factory class for creating an AdminServer.
+ * Factory class for creating an AdminServer
+ * 利用反射创建AdminServer
  */
 public class AdminServerFactory {
     private static final Logger LOG = LoggerFactory.getLogger(AdminServerFactory.class);
@@ -36,6 +37,7 @@ public class AdminServerFactory {
      * to create a JettyAdminServer, rather than referencing the class directly,
      * so that it's ok to omit Jetty from the classpath if a user doesn't wish
      * to pull in Jetty with ZooKeeper.
+     * 如果创建失败，则创建一个空AdminServer
      */
     public static AdminServer createAdminServer() {
         if (!"false".equals(System.getProperty("zookeeper.admin.enableServer"))) {

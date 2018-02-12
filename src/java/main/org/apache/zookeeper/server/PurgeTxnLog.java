@@ -68,7 +68,7 @@ public class PurgeTxnLog {
      *
      * @param dataDir the dir that has the logs
      * @param snapDir the dir that has the snapshots
-     * @param num the number of snapshots to keep
+     * @param num 保持快照的数量
      * @throws IOException
      */
     public static void purge(File dataDir, File snapDir, int num) throws IOException {
@@ -121,6 +121,7 @@ public class PurgeTxnLog {
             MyFileFilter(String prefix){
                 this.prefix=prefix;
             }
+
             public boolean accept(File f){
                 if(!f.getName().startsWith(prefix + "."))
                     return false;
@@ -147,7 +148,7 @@ public class PurgeTxnLog {
             files.addAll(Arrays.asList(snapshots));
         }
 
-        // remove the old files
+        // 清除旧的文件
         for(File f: files)
         {
             final String msg = "Removing file: "+
@@ -222,8 +223,7 @@ public class PurgeTxnLog {
                 printUsageThenExit();
             }
         } catch (NumberFormatException e) {
-            System.err
-                    .println("'" + number + "' can not be parsed to integer.");
+            System.err.println("'" + number + "' can not be parsed to integer.");
             printUsageThenExit();
         }
         return result;

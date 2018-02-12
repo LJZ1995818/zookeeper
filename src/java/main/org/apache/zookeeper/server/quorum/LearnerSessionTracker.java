@@ -59,6 +59,9 @@ public class LearnerSessionTracker extends UpgradeableSessionTracker {
     private final AtomicLong nextSessionId = new AtomicLong();
 
     private final boolean localSessionsEnabled;
+    /**
+     * 全局会话及其过期时间
+     */
     private final ConcurrentMap<Long, Integer> globalSessionsWithTimeouts;
 
     public LearnerSessionTracker(SessionExpirer expirer,
@@ -101,12 +104,17 @@ public class LearnerSessionTracker extends UpgradeableSessionTracker {
         return globalSessionsWithTimeouts.containsKey(sessionId);
     }
 
+    /**
+     * 无论是会话升级还是添加全局会话 都会被调用
+     * @param sessionId
+     * @param sessionTimeout
+     * @return
+     */
     public boolean addGlobalSession(long sessionId, int sessionTimeout) {
         boolean added =
             globalSessionsWithTimeouts.put(sessionId, sessionTimeout) == null;
         if (localSessionsEnabled && added) {
-            // Only do extra logging so we know what kind of session this is
-            // if we're supporting both kinds of sessions
+            // 只做额外的日志记录，所以如果我们支持这两种会话，我们知道这是什么会话。
             LOG.info("Adding global session 0x" + Long.toHexString(sessionId));
         }
         touchTable.get().put(sessionId, sessionTimeout);
@@ -117,7 +125,7 @@ public class LearnerSessionTracker extends UpgradeableSessionTracker {
         boolean added;
         if (localSessionsEnabled && !isGlobalSession(sessionId)) {
             added = localSessionTracker.addSession(sessionId, sessionTimeout);
-            // Check for race condition with session upgrading
+            // 检查会话是否是已经升级为全局会话
             if (isGlobalSession(sessionId)) {
                 added = false;
                 localSessionTracker.removeSession(sessionId);
@@ -131,6 +139,12 @@ public class LearnerSessionTracker extends UpgradeableSessionTracker {
         return added;
     }
 
+    /**
+     * 在session已经存在的情况下，修改session的过期时间
+     * @param sessionId
+     * @param sessionTimeout
+     * @return
+     */
     public boolean touchSession(long sessionId, int sessionTimeout) {
         if (localSessionsEnabled) {
             if (localSessionTracker.touchSession(sessionId, sessionTimeout)) {
@@ -144,10 +158,19 @@ public class LearnerSessionTracker extends UpgradeableSessionTracker {
         return true;
     }
 
+    /**
+     * 全局会话的快照
+     * @return
+     */
     public Map<Long, Integer> snapshot() {
         return touchTable.getAndSet(new ConcurrentHashMap<Long, Integer>());
     }
 
+    /**
+     * 只会创建本地session
+     * @param sessionTimeout
+     * @return
+     */
     public long createSession(int sessionTimeout) {
         if (localSessionsEnabled) {
             return localSessionTracker.createSession(sessionTimeout);

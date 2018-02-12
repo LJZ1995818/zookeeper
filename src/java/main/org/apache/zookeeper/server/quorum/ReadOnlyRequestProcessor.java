@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,10 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This processor is at the beginning of the ReadOnlyZooKeeperServer's
- * processors chain. All it does is, it passes read-only operations (e.g.
- * OpCode.getData, OpCode.exists) through to the next processor, but drops
- * state-changing operations (e.g. OpCode.create, OpCode.setData).
+ * 这个处理器是ReadOnlyZooKeeperServer服务器的请求处理器，它只处理只读操作，而那些状态改变的将去掉
  */
 public class ReadOnlyRequestProcessor extends ZooKeeperCriticalThread implements
         RequestProcessor {
@@ -53,7 +50,7 @@ public class ReadOnlyRequestProcessor extends ZooKeeperCriticalThread implements
     private final ZooKeeperServer zks;
 
     public ReadOnlyRequestProcessor(ZooKeeperServer zks,
-            RequestProcessor nextProcessor) {
+                                    RequestProcessor nextProcessor) {
         super("ReadOnlyRequestProcessor:" + zks.getServerId(), zks
                 .getZooKeeperServerListener());
         this.zks = zks;
@@ -77,31 +74,30 @@ public class ReadOnlyRequestProcessor extends ZooKeeperCriticalThread implements
                     break;
                 }
 
-                // filter read requests
-                switch (request.type) {
-                case OpCode.sync:
-                case OpCode.create:
-                case OpCode.create2:
-                case OpCode.createTTL:
-                case OpCode.createContainer:
-                case OpCode.delete:
-                case OpCode.deleteContainer:
-                case OpCode.setData:
-                case OpCode.reconfig:
-                case OpCode.setACL:
-                case OpCode.multi:
-                case OpCode.check:
-                    ReplyHeader hdr = new ReplyHeader(request.cxid, zks.getZKDatabase()
-                            .getDataTreeLastProcessedZxid(), Code.NOTREADONLY.intValue());
-                    try {
-                        request.cnxn.sendResponse(hdr, null, null);
-                    } catch (IOException e) {
-                        LOG.error("IO exception while sending response", e);
-                    }
-                    continue;
+                switch (request.type) {//将一些会修改数据的请求过滤掉，并返回状态不可操作的响应
+                    case OpCode.sync:
+                    case OpCode.create:
+                    case OpCode.create2:
+                    case OpCode.createTTL:
+                    case OpCode.createContainer:
+                    case OpCode.delete:
+                    case OpCode.deleteContainer:
+                    case OpCode.setData:
+                    case OpCode.reconfig:
+                    case OpCode.setACL:
+                    case OpCode.multi:
+                    case OpCode.check:
+                        ReplyHeader hdr = new ReplyHeader(request.cxid, zks.getZKDatabase()
+                                .getDataTreeLastProcessedZxid(), Code.NOTREADONLY.intValue());
+                        try {
+                            request.cnxn.sendResponse(hdr, null, null);
+                        } catch (IOException e) {
+                            LOG.error("IO exception while sending response", e);
+                        }
+                        continue;
                 }
 
-                // proceed to the next processor
+                // 请请求交给下一个处理器（PrepRequestProcessor）
                 if (nextProcessor != null) {
                     nextProcessor.processRequest(request);
                 }

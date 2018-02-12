@@ -30,6 +30,7 @@ import java.io.Writer;
  *  the original file (if it exists) is left intact.
  *  Based on the org.apache.zookeeper.server.quorum.QuorumPeer.writeLongToFile(...) idiom
  *  using the HDFS AtomicFileOutputStream class.
+ *  使用OutputStream 或者 Writer写入到 AtomicFileOutputStream 中
  */
 public class AtomicFileWritingIdiom {
 
@@ -59,11 +60,11 @@ public class AtomicFileWritingIdiom {
         try {
             out = new AtomicFileOutputStream(targetFile);
             if (wStmt == null) {
-                // execute output stream operation
+                // 执行outputstream操作
                 osStmt.write(out);
             } else {
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(out));
-                // execute writer operation and flush
+                // 执行writer操作并刷新
                 wStmt.write(bw);
                 bw.flush();
             }

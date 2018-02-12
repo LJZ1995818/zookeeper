@@ -28,7 +28,7 @@ public interface QuorumMXBean {
     public String getName();
     
     /**
-     * @return configured number of peers in the quorum
+     * @return 在仲裁中配置的对等数
      */
     public int getQuorumSize();
 }

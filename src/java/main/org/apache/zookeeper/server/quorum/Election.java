@@ -21,6 +21,9 @@ package org.apache.zookeeper.server.quorum;
 
 import org.apache.zookeeper.server.quorum.Vote;
 
+/**
+ * 具有选举功能的接口
+ */
 public interface Election {
     public Vote lookForLeader() throws InterruptedException;
     public void shutdown();

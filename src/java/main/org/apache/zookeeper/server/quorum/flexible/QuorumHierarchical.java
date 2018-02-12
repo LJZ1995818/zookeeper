@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,17 +42,17 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
  * construction, zookeeper servers are split into disjoint groups, and 
  * each server has a weight. We obtain a quorum if we get more than half
  * of the total weight of a group for a majority of groups.
- * 
+ *
  * The configuration of quorums uses two parameters: group and weight. 
  * Groups are sets of ZooKeeper servers, and we set a group by passing
  * a colon-separated list of server ids. It is also necessary to assign
  * weights to server. Here is an example of a configuration that creates
  * three groups and assigns a weight of 1 to each server:
- * 
+ *
  *  group.1=1:2:3
  *  group.2=4:5:6
  *  group.3=7:8:9
- *  
+ *
  *  weight.1=1
  *  weight.2=1
  *  weight.3=1
@@ -62,8 +62,9 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
  *  weight.7=1
  *  weight.8=1
  *  weight.9=1
- * 
+ *
  * Note that it is still necessary to define peers using the server keyword.
+ * 分层的仲裁模式
  */
 
 public class QuorumHierarchical implements QuorumVerifier {
@@ -72,85 +73,86 @@ public class QuorumHierarchical implements QuorumVerifier {
     private HashMap<Long, Long> serverWeight = new HashMap<Long, Long>();
     private HashMap<Long, Long> serverGroup = new HashMap<Long, Long>();
     private HashMap<Long, Long> groupWeight = new HashMap<Long, Long>();
-    
+
     private int numGroups = 0;
-   
+
     private Map<Long, QuorumServer> allMembers = new HashMap<Long, QuorumServer>();
     private Map<Long, QuorumServer> participatingMembers = new HashMap<Long, QuorumServer>();
     private Map<Long, QuorumServer> observingMembers = new HashMap<Long, QuorumServer>();
-    
+
     private long version = 0;
-    
+
     public int hashCode() {
-         assert false : "hashCode not designed";
-         return 42; // any arbitrary constant will do 
+        assert false : "hashCode not designed";
+        return 42; // any arbitrary constant will do
     }
-    
-   public boolean equals(Object o){
-       if (!(o instanceof QuorumHierarchical)) {
-           return false;           
-       }       
-       QuorumHierarchical qm = (QuorumHierarchical)o;
-       if (qm.getVersion() == version) return true;
-       if ((allMembers.size()!=qm.getAllMembers().size()) ||
-           (serverWeight.size() != qm.serverWeight.size()) ||
-           (groupWeight.size() != qm.groupWeight.size()) ||
-            (serverGroup.size() != qm.serverGroup.size())) {
-           return false;
-       }   
-       for (QuorumServer qs: allMembers.values()){
-           QuorumServer qso = qm.getAllMembers().get(qs.id);
-           if (qso == null || !qs.equals(qso)) return false;
-       }
-       for (Entry<Long, Long> entry : serverWeight.entrySet()) {
-           if (!entry.getValue().equals(qm.serverWeight.get(entry.getKey())))
-               return false;
-       }
-       for (Entry<Long, Long> entry : groupWeight.entrySet()) {
-           if (!entry.getValue().equals(qm.groupWeight.get(entry.getKey())))
-               return false;
-       }
-       for (Entry<Long, Long> entry : serverGroup.entrySet()) {
-           if (!entry.getValue().equals(qm.serverGroup.get(entry.getKey())))
-               return false;
-       }
-       return true;
-   }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof QuorumHierarchical)) {
+            return false;
+        }
+        QuorumHierarchical qm = (QuorumHierarchical) o;
+        if (qm.getVersion() == version) return true;
+        if ((allMembers.size() != qm.getAllMembers().size()) ||
+                (serverWeight.size() != qm.serverWeight.size()) ||
+                (groupWeight.size() != qm.groupWeight.size()) ||
+                (serverGroup.size() != qm.serverGroup.size())) {
+            return false;
+        }
+        for (QuorumServer qs : allMembers.values()) {
+            QuorumServer qso = qm.getAllMembers().get(qs.id);
+            if (qso == null || !qs.equals(qso)) return false;
+        }
+        for (Entry<Long, Long> entry : serverWeight.entrySet()) {
+            if (!entry.getValue().equals(qm.serverWeight.get(entry.getKey())))
+                return false;
+        }
+        for (Entry<Long, Long> entry : groupWeight.entrySet()) {
+            if (!entry.getValue().equals(qm.groupWeight.get(entry.getKey())))
+                return false;
+        }
+        for (Entry<Long, Long> entry : serverGroup.entrySet()) {
+            if (!entry.getValue().equals(qm.serverGroup.get(entry.getKey())))
+                return false;
+        }
+        return true;
+    }
+
     /**
      * This contructor requires the quorum configuration
      * to be declared in a separate file, and it takes the
      * file as an input parameter.
      */
     public QuorumHierarchical(String filename)
-    throws ConfigException {
-        readConfigFile(filename);    
+            throws ConfigException {
+        readConfigFile(filename);
     }
-    
+
     /**
      * This constructor takes a set of properties. We use
      * it in the unit test for this feature.
      */
-    
+
     public QuorumHierarchical(Properties qp) throws ConfigException {
         parse(qp);
         LOG.info(serverWeight.size() + ", " + serverGroup.size() + ", " + groupWeight.size());
     }
-  
+
     /**
-     * Returns the weight of a server.
-     * 
+     * 返回服务器的负载
+     *
      * @param id
      */
-    public long getWeight(long id){
+    public long getWeight(long id) {
         return serverWeight.get(id);
     }
-    
+
     /**
      * Reads a configration file. Called from the constructor
      * that takes a file as an input.
      */
     private void readConfigFile(String filename)
-    throws ConfigException{
+            throws ConfigException {
         File configFile = new File(filename);
 
         LOG.info("Reading configuration from: " + configFile);
@@ -160,7 +162,7 @@ public class QuorumHierarchical implements QuorumVerifier {
                 throw new IllegalArgumentException(configFile.toString()
                         + " file is missing");
             }
-    
+
             Properties cfg = new Properties();
             FileInputStream in = new FileInputStream(configFile);
             try {
@@ -168,137 +170,137 @@ public class QuorumHierarchical implements QuorumVerifier {
             } finally {
                 in.close();
             }
-    
+
             parse(cfg);
         } catch (IOException e) {
             throw new ConfigException("Error processing " + filename, e);
         } catch (IllegalArgumentException e) {
             throw new ConfigException("Error processing " + filename, e);
         }
-        
+
     }
-    
-    
+
+
     /**
      * Parse properties if configuration given in a separate file.
      * Assumes that allMembers has been already assigned
-     * @throws ConfigException 
+     * @throws ConfigException
      */
-    private void parse(Properties quorumProp) throws ConfigException{
+    private void parse(Properties quorumProp) throws ConfigException {
         for (Entry<Object, Object> entry : quorumProp.entrySet()) {
             String key = entry.getKey().toString();
-            String value = entry.getValue().toString(); 
-            
-            if (key.startsWith("server.")) {
+            String value = entry.getValue().toString();
+
+            if (key.startsWith("server.")) {// 对服务器进行解析
                 int dot = key.indexOf('.');
                 long sid = Long.parseLong(key.substring(dot + 1));
                 QuorumServer qs = new QuorumServer(sid, value);
-                allMembers.put(Long.valueOf(sid), qs);  
-                if (qs.type == LearnerType.PARTICIPANT) 
-                   participatingMembers.put(Long.valueOf(sid), qs);
+                allMembers.put(Long.valueOf(sid), qs);
+                if (qs.type == LearnerType.PARTICIPANT)
+                    participatingMembers.put(Long.valueOf(sid), qs);
                 else {
-                   observingMembers.put(Long.valueOf(sid), qs);
+                    observingMembers.put(Long.valueOf(sid), qs);
                 }
-            } else if (key.startsWith("group")) {
+            } else if (key.startsWith("group")) {// 分组解析
                 int dot = key.indexOf('.');
                 long gid = Long.parseLong(key.substring(dot + 1));
-                
+
                 numGroups++;
-                
+
                 String parts[] = value.split(":");
-                for(String s : parts){
+                for (String s : parts) {
                     long sid = Long.parseLong(s);
-                    if(serverGroup.containsKey(sid))
+                    if (serverGroup.containsKey(sid))
                         throw new ConfigException("Server " + sid + "is in multiple groups");
                     else
                         serverGroup.put(sid, gid);
                 }
-                    
-                
-            } else if(key.startsWith("weight")) {
+            } else if (key.startsWith("weight")) {// 解析权重
                 int dot = key.indexOf('.');
                 long sid = Long.parseLong(key.substring(dot + 1));
                 serverWeight.put(sid, Long.parseLong(value));
-            } else if (key.equals("version")){
-               version = Long.parseLong(value, 16);
-            }        
-        }
-        
-        for (QuorumServer qs: allMembers.values()){
-           Long id = qs.id;
-           if (qs.type == LearnerType.PARTICIPANT){
-               if (!serverGroup.containsKey(id)) 
-                   throw new ConfigException("Server " + id + "is not in a group");
-               if (!serverWeight.containsKey(id))
-                   serverWeight.put(id, (long) 1);
+            } else if (key.equals("version")) {// 解析版本
+                version = Long.parseLong(value, 16);
             }
         }
-           
-           
+
+        for (QuorumServer qs : allMembers.values()) {
+            Long id = qs.id;
+            if (qs.type == LearnerType.PARTICIPANT) {
+                if (!serverGroup.containsKey(id))
+                    throw new ConfigException("Server " + id + "is not in a group");
+                if (!serverWeight.containsKey(id))
+                    serverWeight.put(id, (long) 1);
+            }
+        }
+
+
         computeGroupWeight();
     }
-    
-    public Map<Long, QuorumServer> getAllMembers() { 
-       return allMembers;
+
+    public Map<Long, QuorumServer> getAllMembers() {
+        return allMembers;
     }
-    public String toString(){
-       StringWriter sw = new StringWriter();
-       
-       for (QuorumServer member: getAllMembers().values()){            
-               String key = "server." + member.id;
+
+    public String toString() {
+        StringWriter sw = new StringWriter();
+
+        for (QuorumServer member : getAllMembers().values()) {
+            String key = "server." + member.id;
             String value = member.toString();
             sw.append(key);
             sw.append('=');
             sw.append(value);
-            sw.append('\n');                       
-       }
-       
-       Map<Long, String> groups = new HashMap<Long, String>();
-       for (Entry<Long, Long> pair: serverGroup.entrySet()) {
-           Long sid = pair.getKey();
-           Long gid = pair.getValue();
-           String str = groups.get(gid);
-           if (str == null) str = sid.toString();
-           else str = str.concat(":").concat(sid.toString());
-           groups.put(gid, str);
-       }
-       
-       for (Entry<Long, String> pair: groups.entrySet()) {
-           Long gid = pair.getKey();
-           String key = "group." + gid.toString();
+            sw.append('\n');
+        }
+
+        Map<Long, String> groups = new HashMap<Long, String>();
+        for (Entry<Long, Long> pair : serverGroup.entrySet()) {
+            Long sid = pair.getKey();
+            Long gid = pair.getValue();
+            String str = groups.get(gid);
+            if (str == null) str = sid.toString();
+            else str = str.concat(":").concat(sid.toString());
+            groups.put(gid, str);
+        }
+
+        for (Entry<Long, String> pair : groups.entrySet()) {
+            Long gid = pair.getKey();
+            String key = "group." + gid.toString();
             String value = pair.getValue();
             sw.append(key);
             sw.append('=');
             sw.append(value);
-            sw.append('\n');           
-       }
-   
-   
-       for (Entry<Long, Long> pair: serverWeight.entrySet()) {
-           Long sid = pair.getKey();
-           String key = "weight." + sid.toString();
+            sw.append('\n');
+        }
+
+
+        for (Entry<Long, Long> pair : serverWeight.entrySet()) {
+            Long sid = pair.getKey();
+            String key = "weight." + sid.toString();
             String value = pair.getValue().toString();
             sw.append(key);
             sw.append('=');
             sw.append(value);
-            sw.append('\n');           
-       }
-       
-       sw.append("version=" + Long.toHexString(version));
-       
-       return sw.toString();        
+            sw.append('\n');
+        }
+
+        sw.append("version=" + Long.toHexString(version));
+
+        return sw.toString();
     }
-    
+
     /**
      * This method pre-computes the weights of groups to speed up processing
      * when validating a given set. We compute the weights of groups in 
      * different places, so we have a separate method.
+     * 计算分组权重
      */
-    private void computeGroupWeight(){
+    private void computeGroupWeight() {
         for (Entry<Long, Long> entry : serverGroup.entrySet()) {
             Long sid = entry.getKey();
             Long gid = entry.getValue();
-            if(!groupWeight.containsKey(gid))
+            if (!groupWeight.containsKey(gid))
                 groupWeight.put(gid, serverWeight.get(sid));
             else {
                 long totalWeight = serverWeight.get(sid) + groupWeight.get(gid);
@@ -308,32 +310,34 @@ public class QuorumHierarchical implements QuorumVerifier {
         
         /*
          * Do not consider groups with weight zero
+         * 不包含权重为0的分组
          */
-        for(long weight: groupWeight.values()){
+        for (long weight : groupWeight.values()) {
             LOG.debug("Group weight: " + weight);
-            if(weight == ((long) 0)){
+            if (weight == ((long) 0)) {
                 numGroups--;
                 LOG.debug("One zero-weight group: " + 1 + ", " + numGroups);
             }
         }
     }
-    
+
     /**
      * Verifies if a given set is a quorum.
+     * 判断集群是否有效的   有效group 是否达到 总group 一半
      */
-    public boolean containsQuorum(Set<Long> set){
+    public boolean containsQuorum(Set<Long> set) {
         HashMap<Long, Long> expansion = new HashMap<Long, Long>();
         
         /*
          * Adds up weights per group
          */
-        if(set.size() == 0) return false;
+        if (set.size() == 0) return false;
         else LOG.debug("Set size: " + set.size());
-        
-        for(long sid : set){
+
+        for (long sid : set) {
             Long gid = serverGroup.get(sid);
             if (gid == null) continue;
-            if(!expansion.containsKey(gid))
+            if (!expansion.containsKey(gid))
                 expansion.put(gid, serverWeight.get(sid));
             else {
                 long totalWeight = serverWeight.get(sid) + expansion.get(gid);
@@ -353,7 +357,7 @@ public class QuorumHierarchical implements QuorumVerifier {
         }
 
         LOG.debug("Majority group counter: {}, {}", majGroupCounter, numGroups);
-        if ((majGroupCounter > (numGroups / 2))){
+        if ((majGroupCounter > (numGroups / 2))) {
             LOG.debug("Positive set size: {}", set.size());
             return true;
         } else {
@@ -361,20 +365,21 @@ public class QuorumHierarchical implements QuorumVerifier {
             return false;
         }
     }
+
     public Map<Long, QuorumServer> getVotingMembers() {
-       return participatingMembers;
-   }
+        return participatingMembers;
+    }
 
-   public Map<Long, QuorumServer> getObservingMembers() {
-       return observingMembers;
-   }
+    public Map<Long, QuorumServer> getObservingMembers() {
+        return observingMembers;
+    }
 
-   public long getVersion() {
-       return version;
-   }          
+    public long getVersion() {
+        return version;
+    }
 
-   public void setVersion(long ver) {
-       version = ver;
-   }
+    public void setVersion(long ver) {
+        version = ver;
+    }
 
 }

@@ -31,12 +31,9 @@ import org.apache.zookeeper.server.ZooKeeperServerBean;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 
 /**
- * A ZooKeeperServer which comes into play when peer is partitioned from the
- * majority. Handles read-only clients, but drops connections from not-read-only
- * ones.
+ * ReadOnlyZooKeeperServer服务器只处理只读的服务器，并不处理其他的连接
  * <p>
- * The very first processor in the chain of request processors is a
- * ReadOnlyRequestProcessor which drops state-changing requests.
+ * 最先开始的是ReadOnlyRequestProcessor
  */
 public class ReadOnlyZooKeeperServer extends ZooKeeperServer {
 
@@ -66,7 +63,7 @@ public class ReadOnlyZooKeeperServer extends ZooKeeperServer {
             LOG.warn("Not starting Read-only server as startup follows shutdown!");
             return;
         }
-        registerJMX(new ReadOnlyBean(this), self.jmxLocalPeerBean);
+        registerJMX(new ReadOnlyBean(this), self.jmxLocalPeerBean);// 注册只读服务器MBean
         super.startup();
         self.setZooKeeperServer(this);
         self.adminServer.setZooKeeperServer(this);

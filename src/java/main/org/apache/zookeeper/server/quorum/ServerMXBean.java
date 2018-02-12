@@ -19,7 +19,7 @@
 package org.apache.zookeeper.server.quorum;
 
 /**
- * A quorum server MBean.
+ * 一个 quorum server MBean.
  */
 public interface ServerMXBean {
     /**
@@ -27,7 +27,7 @@ public interface ServerMXBean {
      */
     public String getName();
     /**
-     * @return the start time the server 
+     * @return 返回服务的开始时间
      */
     public String getStartTime();
 }

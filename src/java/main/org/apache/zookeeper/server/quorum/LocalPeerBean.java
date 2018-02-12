@@ -21,7 +21,7 @@ package org.apache.zookeeper.server.quorum;
 
 
 /**
- * Implementation of the local peer MBean interface.
+ * 实现local peer MBean 接口.
  */
 public class LocalPeerBean extends ServerBean implements LocalPeerMXBean {
     private final QuorumPeer peer;

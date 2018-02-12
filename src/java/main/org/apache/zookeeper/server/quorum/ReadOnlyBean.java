@@ -22,7 +22,7 @@ import org.apache.zookeeper.server.ZooKeeperServer;
 import org.apache.zookeeper.server.ZooKeeperServerBean;
 
 /**
- * ReadOnly MX Bean interface, implemented by ReadOnlyBean
+ * 只读服务器的MXBean接口, implemented by ReadOnlyBean
  *
  */
 public class ReadOnlyBean extends ZooKeeperServerBean {

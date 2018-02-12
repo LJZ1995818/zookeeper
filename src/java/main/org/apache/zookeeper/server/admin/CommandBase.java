@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class CommandBase implements Command {
+    /**
+     * 命令的主键
+     */
     private final String primaryName;
     private final Set<String> names;
     private final String doc;
@@ -56,6 +59,7 @@ public abstract class CommandBase implements Command {
     }
 
     /**
+     * 初始化用于命令的返回响应
      * @return A response with the command set to the primary name and the
      *         error set to null (these are the two entries that all command
      *         responses are required to include).

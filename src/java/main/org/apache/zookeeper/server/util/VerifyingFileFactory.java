@@ -22,6 +22,9 @@ import java.io.File;
 
 import org.slf4j.Logger;
 
+/**
+ * 验证文件是否符合要求的工厂
+ */
 public final class VerifyingFileFactory {
 
     private final boolean warnForRelativePath;
@@ -60,6 +63,9 @@ public final class VerifyingFileFactory {
                 +File.separator+" to indicate that you're sure!");
     }
 
+    /**
+     * 设置验证的选项
+     */
     public static class Builder {
         private boolean warnForRelativePathOption = false;
         private boolean failForNonExistingPathOption = false;

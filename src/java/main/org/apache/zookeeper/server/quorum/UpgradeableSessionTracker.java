@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A session tracker that supports upgradeable local sessions.
+ * 一个支持升级本地会话的session追踪器
  */
 public abstract class UpgradeableSessionTracker implements SessionTracker {
     private static final Logger LOG = LoggerFactory.getLogger(UpgradeableSessionTracker.class);
@@ -61,7 +62,7 @@ public abstract class UpgradeableSessionTracker implements SessionTracker {
      * This simply removes the session from the local tracker and marks
      * it as global.  It is up to the caller to actually
      * queue up a transaction for the session.
-     *
+     * 将会话升级为全局会话，即简单的移除本地会话，调用addGlobalSession（具体实现由leader、leaner决定）
      * @param sessionId
      * @return session timeout (-1 if not a local session)
      */

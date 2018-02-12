@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class encapsulates a Jetty server for running Commands.
- *
+ * 这个类封装了一个用于运行命令的Jetty服务器。
  * Given the default settings, start a ZooKeeper server and visit
  * http://<hostname>:8080/commands for links to all registered commands. Visiting
  * http://<hostname>:8080/commands/<commandname> will execute the associated
@@ -85,13 +85,13 @@ public class JettyAdminServer implements AdminServer {
         connector.setHost(address);
         connector.setPort(port);
         connector.setIdleTimeout(idleTimeout);
-        server.addConnector(connector);
+        server.addConnector(connector);// 配置连接设置
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/*");
-        server.setHandler(context);
+        server.setHandler(context);// 配置上下文处理
 
-        context.addServlet(new ServletHolder(new CommandServlet()), commandUrl + "/*");
+        context.addServlet(new ServletHolder(new CommandServlet()), commandUrl + "/*");// 添加Servlet处理器
     }
 
     /**
@@ -153,7 +153,7 @@ public class JettyAdminServer implements AdminServer {
             // Capture the command name from the URL
             String cmd = request.getPathInfo();
             if (cmd == null || cmd.equals("/")) {
-                // No command specified, print links to all commands instead
+                // 没有指定命令，只能打印指向所有命令的链接
                 for (String link : commandLinks()) {
                     response.getWriter().println(link);
                     response.getWriter().println("<br/>");
@@ -183,7 +183,7 @@ public class JettyAdminServer implements AdminServer {
     }
 
     /**
-     * Returns a list of URLs to each registered Command.
+     * 返回每个已注册命令的URL列表。
      */
     private List<String> commandLinks() {
         List<String> links = new ArrayList<String>();

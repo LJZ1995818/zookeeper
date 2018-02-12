@@ -22,6 +22,7 @@ import java.util.Map;
 
 /**
  * A response from running a {@link Command}.
+ * 运行@link Command}返回的响应
  */
 public class CommandResponse {
 

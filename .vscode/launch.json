@@ -6,6 +6,17 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Debug (Launch)-DigestAuthenticationProvider<ZooKeeper>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "projectName": "ZooKeeper",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.zookeeper.server.auth.DigestAuthenticationProvider",
+            "args": "aaa bbb ccc"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch)-ServerAdminClient<ZooKeeper>",
             "request": "launch",
             "cwd": "${workspaceFolder}",

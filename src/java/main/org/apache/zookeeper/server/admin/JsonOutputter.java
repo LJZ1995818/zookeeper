@@ -37,6 +37,9 @@ public class JsonOutputter implements CommandOutputter {
 
     private ObjectMapper mapper;
 
+    /**
+     * 配置mapper属性 进行序列化
+     */
     public JsonOutputter() {
         mapper = new ObjectMapper();
         mapper.configure(SerializationConfig.Feature.WRITE_ENUMS_USING_TO_STRING, true);

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,13 +22,14 @@ import org.apache.zookeeper.jmx.ZKMBeanInfo;
 
 /**
  * A remote peer bean only provides limited information about the remote peer,
- * and the peer cannot be managed remotely. 
+ * and the peer cannot be managed remotely.
+ * 获取远程  QuorumServer  信息
  */
-public class RemotePeerBean implements RemotePeerMXBean,ZKMBeanInfo {
+public class RemotePeerBean implements RemotePeerMXBean, ZKMBeanInfo {
     private QuorumPeer.QuorumServer peer;
-    
-    public RemotePeerBean(QuorumPeer.QuorumServer peer){
-        this.peer=peer;
+
+    public RemotePeerBean(QuorumPeer.QuorumServer peer) {
+        this.peer = peer;
     }
 
     public void setQuorumServer(QuorumPeer.QuorumServer peer) {
@@ -36,14 +37,15 @@ public class RemotePeerBean implements RemotePeerMXBean,ZKMBeanInfo {
     }
 
     public String getName() {
-        return "replica."+peer.id;
+        return "replica." + peer.id;
     }
+
     public boolean isHidden() {
         return false;
     }
 
     public String getQuorumAddress() {
-        return peer.addr.getHostString()+":"+peer.addr.getPort();
+        return peer.addr.getHostString() + ":" + peer.addr.getPort();
     }
 
     public String getElectionAddress() {

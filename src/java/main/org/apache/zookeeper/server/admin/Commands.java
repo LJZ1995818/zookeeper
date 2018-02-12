@@ -108,6 +108,7 @@ public class Commands {
     }
 
     static {
+        // 注册命令
         registerCommand(new CnxnStatResetCommand());
         registerCommand(new ConfCommand());
         registerCommand(new ConsCommand());

@@ -112,6 +112,7 @@ public class QuorumPeerConfig {
 
     /**
      * Parse a ZooKeeper configuration file
+     * 解析一个zookeeper配置文件 （仲裁模式的） 分为3部分
      * @param path the patch of the configuration file
      * @throws ConfigException error processing configuration
      */
@@ -197,6 +198,12 @@ public class QuorumPeerConfig {
     // "zoo.cfg.dynamic.1001" returns version of hex number "0x1001".
     // If a dynamic file name doesn't have any version at the end of file,
     // e.g. "zoo.cfg.dynamic", it returns null.
+
+    /**
+     * 根据文件名称获取配置的   版本号  用于仲裁模式下的动态配置
+     * @param filename 例如  zoo.cfg.1
+     * @return
+     */
     public static String getVersionFromFilename(String filename) {
         int i = filename.lastIndexOf('.');
         if (i < 0 || i >= filename.length())
@@ -212,7 +219,7 @@ public class QuorumPeerConfig {
     }
 
     /**
-     * Parse config from a Properties.
+     * 解析仲裁模式 cfg 文件
      * @param zkProp Properties to parse from.
      * @throws IOException
      * @throws ConfigException
@@ -362,6 +369,7 @@ public class QuorumPeerConfig {
 
         // backward compatibility - dynamic configuration in the same file as
         // static configuration params see writeDynamicConfig()
+        // 在同一文件中的向后兼容性-动态配置为静态配置参数见writedynamicconfig()
         if (dynamicConfigFileStr == null) {
             setupQuorumPeerConfig(zkProp, true);
             if (isDistributed() && isReconfigEnabled()) {
@@ -418,7 +426,11 @@ public class QuorumPeerConfig {
     }
 
     /**
-     * Writes dynamic configuration file
+     * 写入动态配置文件
+     * @param dynamicConfigFilename 动态配置文件名称
+     * @param qv
+     * @param needKeepVersion 是否需要将version 写入配置文件
+     * @throws IOException
      */
     public static void writeDynamicConfig(final String dynamicConfigFilename,
                                           final QuorumVerifier qv,
@@ -430,7 +442,7 @@ public class QuorumPeerConfig {
             public void write(Writer out) throws IOException {
                 Properties cfg = new Properties();
                 cfg.load(new StringReader(
-                        qv.toString()));
+                        qv.toString()));// 将QuorumVerifier转换为属性
 
                 List<String> servers = new ArrayList<String>();
                 for (Entry<Object, Object> entry : cfg.entrySet()) {
@@ -529,6 +541,13 @@ public class QuorumPeerConfig {
     }
 
 
+    /**
+     * 创建仲裁模式的验证
+     * @param dynamicConfigProp
+     * @param isHierarchical 是否是分组模式
+     * @return
+     * @throws ConfigException
+     */
     private static QuorumVerifier createQuorumVerifier(Properties dynamicConfigProp, boolean isHierarchical) throws ConfigException {
         if (isHierarchical) {
             return new QuorumHierarchical(dynamicConfigProp);
@@ -541,18 +560,24 @@ public class QuorumPeerConfig {
         }
     }
 
+    /**
+     * 启动仲裁模式配置文件
+     * @param prop
+     * @param configBackwardCompatibilityMode
+     * @throws IOException
+     * @throws ConfigException
+     */
     void setupQuorumPeerConfig(Properties prop, boolean configBackwardCompatibilityMode)
             throws IOException, ConfigException {
         quorumVerifier = parseDynamicConfig(prop, electionAlg, true, configBackwardCompatibilityMode);
-        setupMyId();
-        setupClientPort();
+        setupMyId();// 读取当前服务的serverID
+        setupClientPort();// 配置ClientPort
         setupPeerType();
         checkValidity();
     }
 
     /**
-     * Parse dynamic configuration file and return
-     * quorumVerifier for new configuration.
+     * 解析新配置的动态配置文件并返回quorumverifier。
      * @param dynamicConfigProp Properties to parse from.
      * @throws IOException
      * @throws ConfigException
@@ -610,6 +635,10 @@ public class QuorumPeerConfig {
         return qv;
     }
 
+    /**
+     * 读取当前服务的serverID
+     * @throws IOException
+     */
     private void setupMyId() throws IOException {
         File myIdFile = new File(dataDir, "myid");
         // standalone server doesn't need myid file.
@@ -633,7 +662,7 @@ public class QuorumPeerConfig {
     }
 
     private void setupClientPort() throws ConfigException {
-        if (serverId == UNSET_SERVERID) {
+        if (serverId == UNSET_SERVERID) {// 默认值
             return;
         }
         QuorumServer qs = quorumVerifier.getAllMembers().get(serverId);
@@ -649,6 +678,9 @@ public class QuorumPeerConfig {
         if (qs != null && qs.clientAddr != null) clientPortAddress = qs.clientAddr;
     }
 
+    /**
+     * 验证peerType 是否符合配置 如果不符合，则重新设置
+     */
     private void setupPeerType() {
         // Warn about inconsistent peer type
         LearnerType roleByServersList = quorumVerifier.getObservingMembers().containsKey(serverId) ? LearnerType.OBSERVER
@@ -662,6 +694,11 @@ public class QuorumPeerConfig {
         }
     }
 
+    /**
+     * 检验是否是有效的
+     * @throws IOException
+     * @throws ConfigException
+     */
     public void checkValidity() throws IOException, ConfigException {
         if (isDistributed()) {
             if (initLimit == 0) {
@@ -761,6 +798,10 @@ public class QuorumPeerConfig {
         return serverId;
     }
 
+    /**
+     * 判断是否是分布式
+     * @return
+     */
     public boolean isDistributed() {
         return quorumVerifier != null && (!standaloneEnabled || quorumVerifier.getVotingMembers().size() > 1);
     }

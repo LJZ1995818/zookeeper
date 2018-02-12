@@ -25,7 +25,7 @@ import org.apache.zookeeper.server.ZooKeeperServer;
 
 /**
  * Interface implemented by all commands runnable by JettyAdminServer.
- *
+ * 所有运行在Jettydminserver实现的接口。
  * @see CommandBase
  * @see Commands
  * @see JettyAdminServer

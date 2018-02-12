@@ -19,7 +19,7 @@
 package org.apache.zookeeper.server.quorum;
 
 /**
- * A proxy for a remote quorum peer.
+ * 一个远程的quorum peer的代理
  */
 public interface RemotePeerMXBean {
     /**

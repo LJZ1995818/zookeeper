@@ -23,7 +23,7 @@ import org.apache.zookeeper.server.SessionTrackerImpl;
 import org.apache.zookeeper.server.ZooKeeperServerListener;
 
 /**
- * Local session tracker.
+ * 本地会话追踪器
  */
 public class LocalSessionTracker extends SessionTrackerImpl {
     public LocalSessionTracker(SessionExpirer expirer,

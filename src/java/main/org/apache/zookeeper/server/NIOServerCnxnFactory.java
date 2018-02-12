@@ -1048,6 +1048,11 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
         }
     }
 
+    /**
+     * 获取连接信息
+     * @param brief
+     * @return
+     */
     @Override
     public Iterable<Map<String, Object>> getAllConnectionInfo(boolean brief) {
         HashSet<Map<String, Object>> info = new HashSet<Map<String, Object>>();

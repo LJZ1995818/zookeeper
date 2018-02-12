@@ -604,6 +604,16 @@ public class DataTree {
                 EventType.NodeChildrenChanged);
     }
 
+    /**
+     * 设置节点数据
+     * @param path
+     * @param data
+     * @param version
+     * @param zxid
+     * @param time
+     * @return
+     * @throws KeeperException.NoNodeException
+     */
     public Stat setData(String path, byte data[], int version, long zxid,
                         long time) throws KeeperException.NoNodeException {
         Stat s = new Stat();

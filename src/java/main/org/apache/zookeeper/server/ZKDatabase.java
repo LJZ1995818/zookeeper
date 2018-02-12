@@ -603,6 +603,10 @@ public class ZKDatabase {
         this.snapLog.close();
     }
 
+    /**
+     * 将 QuorumVerifier（即配置信息）写入到配置节点
+     * @param qv
+     */
     public synchronized void initConfigInZKDatabase(QuorumVerifier qv) {
         if (qv == null) return; // only happens during tests
         try {

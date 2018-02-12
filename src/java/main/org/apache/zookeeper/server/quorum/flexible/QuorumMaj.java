@@ -34,15 +34,24 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
  * 
  */
 public class QuorumMaj implements QuorumVerifier {
+    /**
+     * 所有的 仲裁模式下的 成员
+     */
     private Map<Long, QuorumServer> allMembers = new HashMap<Long, QuorumServer>();
+    /**
+     * 参与者  服务器集合
+     */
     private Map<Long, QuorumServer> votingMembers = new HashMap<Long, QuorumServer>();
+    /**
+     * 观察者  服务器集合
+     */
     private Map<Long, QuorumServer> observingMembers = new HashMap<Long, QuorumServer>();
     private long version = 0;
     private int half;
 
     public int hashCode() {
         assert false : "hashCode not designed";
-        return 42; // any arbitrary constant will do
+        return 42; // 任意常数都可以。
     }
 
     public boolean equals(Object o) {
@@ -85,7 +94,7 @@ public class QuorumMaj implements QuorumVerifier {
 
             if (key.startsWith("server.")) {
                 int dot = key.indexOf('.');
-                long sid = Long.parseLong(key.substring(dot + 1));
+                long sid = Long.parseLong(key.substring(dot + 1));// 服务ID
                 QuorumServer qs = new QuorumServer(sid, value);
                 allMembers.put(Long.valueOf(sid), qs);
                 if (qs.type == LearnerType.PARTICIPANT)
@@ -127,8 +136,7 @@ public class QuorumMaj implements QuorumVerifier {
     }    
 
     /**
-     * Verifies if a set is a majority. Assumes that ackSet contains acks only
-     * from votingMembers
+     * 验证一个集合是否为多数。假定ackset只包含从votingmembers ACK
      */
     public boolean containsQuorum(Set<Long> ackSet) {
         return (ackSet.size() > half);

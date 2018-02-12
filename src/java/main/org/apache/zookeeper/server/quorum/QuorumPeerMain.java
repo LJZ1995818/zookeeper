@@ -64,7 +64,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
  */
 @InterfaceAudience.Public
 /**
- * 仲裁模式的主函数 入口
+ * 仲裁模式的主函数 入口 
  */
 public class QuorumPeerMain {
     private static final Logger LOG = LoggerFactory.getLogger(QuorumPeerMain.class);
@@ -140,7 +140,7 @@ public class QuorumPeerMain {
             ServerCnxnFactory cnxnFactory = null;
             ServerCnxnFactory secureCnxnFactory = null;
 
-            if (config.getClientPortAddress() != null) {
+            if (config.getClientPortAddress() != null) {// 创建cnxn工厂
                 cnxnFactory = ServerCnxnFactory.createFactory();
                 cnxnFactory.configure(config.getClientPortAddress(), config.getMaxClientCnxns(), false);
             }

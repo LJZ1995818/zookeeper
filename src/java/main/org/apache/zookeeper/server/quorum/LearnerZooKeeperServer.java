@@ -31,12 +31,12 @@ import org.apache.zookeeper.server.ZooKeeperServerBean;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 
 /**
- * Parent class for all ZooKeeperServers for Learners
+ * 观察者和跟踪者的ZooKeeperServers的父类----Learners
  */
 public abstract class LearnerZooKeeperServer extends QuorumZooKeeperServer {
 
     /*
-     * Request processors
+     * 请求处理器
      */
     protected CommitProcessor commitProcessor;
     protected SyncRequestProcessor syncProcessor;
@@ -58,9 +58,7 @@ public abstract class LearnerZooKeeperServer extends QuorumZooKeeperServer {
     abstract public Learner getLearner();
 
     /**
-     * Returns the current state of the session tracker. This is only currently
-     * used by a Learner to build a ping response packet.
-     *
+     * 返回会话跟踪器的当前状态。这只是当前学习者用来构建ping响应包的情况。
      */
     protected Map<Long, Integer> getTouchSnapshot() {
         if (sessionTracker != null) {

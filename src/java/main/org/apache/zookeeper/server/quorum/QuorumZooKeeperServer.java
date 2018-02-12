@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,9 +43,8 @@ public abstract class QuorumZooKeeperServer extends ZooKeeperServer {
     protected UpgradeableSessionTracker upgradeableSessionTracker;
 
     protected QuorumZooKeeperServer(FileTxnSnapLog logFactory, int tickTime,
-            int minSessionTimeout, int maxSessionTimeout,
-            ZKDatabase zkDb, QuorumPeer self)
-    {
+                                    int minSessionTimeout, int maxSessionTimeout,
+                                    ZKDatabase zkDb, QuorumPeer self) {
         super(logFactory, tickTime, minSessionTimeout, maxSessionTimeout, zkDb);
         this.self = self;
     }
@@ -56,6 +55,14 @@ public abstract class QuorumZooKeeperServer extends ZooKeeperServer {
         upgradeableSessionTracker.start();
     }
 
+    /**
+     * 检查是否需要升级请求
+     * 即create 节点 操作
+     * @param request
+     * @return
+     * @throws IOException
+     * @throws KeeperException
+     */
     public Request checkUpgradeSession(Request request)
             throws IOException, KeeperException {
         // If this is a request for a local session and it is to
@@ -64,11 +71,13 @@ public abstract class QuorumZooKeeperServer extends ZooKeeperServer {
         // This is called by the request processor thread (either follower
         // or observer request processor), which is unique to a learner.
         // So will not be called concurrently by two threads.
+        // 如果非创建节点或者是全局会话下，不需要升级请求
         if ((request.type != OpCode.create && request.type != OpCode.create2 && request.type != OpCode.multi) ||
-            !upgradeableSessionTracker.isLocalSession(request.sessionId)) {
+                !upgradeableSessionTracker.isLocalSession(request.sessionId)) {
             return null;
         }
 
+        // 如果请求请求是或者请求中包含包含了  创建暂时性节点，则升级会话，并返回创建session的请求
         if (OpCode.multi == request.type) {
             MultiTransactionRecord multiTransactionRecord = new MultiTransactionRecord();
             request.request.rewind();
@@ -77,7 +86,7 @@ public abstract class QuorumZooKeeperServer extends ZooKeeperServer {
             boolean containsEphemeralCreate = false;
             for (Op op : multiTransactionRecord) {
                 if (op.getType() == OpCode.create || op.getType() == OpCode.create2) {
-                    CreateRequest createRequest = (CreateRequest)op.toRequestRecord();
+                    CreateRequest createRequest = (CreateRequest) op.toRequestRecord();
                     CreateMode createMode = CreateMode.fromFlag(createRequest.getFlags());
                     if (createMode.isEphemeral()) {
                         containsEphemeralCreate = true;
@@ -107,6 +116,11 @@ public abstract class QuorumZooKeeperServer extends ZooKeeperServer {
         return makeUpgradeRequest(request.sessionId);
     }
 
+    /**
+     * 升级会话，并返回创建会话的请求
+     * @param sessionId
+     * @return
+     */
     private Request makeUpgradeRequest(long sessionId) {
         // Make sure to atomically check local session status, upgrade
         // session, and make the session creation request.  This is to
@@ -116,6 +130,7 @@ public abstract class QuorumZooKeeperServer extends ZooKeeperServer {
                 int timeout = upgradeableSessionTracker.upgradeSession(sessionId);
                 ByteBuffer to = ByteBuffer.allocate(4);
                 to.putInt(timeout);
+                // 返回创建全局会话的请求
                 return new Request(
                         null, sessionId, 0, OpCode.createSession, to, null);
             }
@@ -124,7 +139,7 @@ public abstract class QuorumZooKeeperServer extends ZooKeeperServer {
     }
 
     /**
-     * Implements the SessionUpgrader interface,
+     * 将本地会话升级为全局会话
      *
      * @param sessionId
      */
@@ -142,23 +157,23 @@ public abstract class QuorumZooKeeperServer extends ZooKeeperServer {
         // We need to set isLocalSession to tree for these type of request
         // so that the request processor can process them correctly.
         switch (si.type) {
-        case OpCode.createSession:
-            if (self.areLocalSessionsEnabled()) {
-                // All new sessions local by default.
-                si.setLocalSession(true);
-            }
-            break;
-        case OpCode.closeSession:
-            String reqType = "global";
-            if (upgradeableSessionTracker.isLocalSession(si.sessionId)) {
-                si.setLocalSession(true);
-                reqType = "local";
-            }
-            LOG.info("Submitting " + reqType + " closeSession request"
-                    + " for session 0x" + Long.toHexString(si.sessionId));
-            break;
-        default:
-            break;
+            case OpCode.createSession:
+                if (self.areLocalSessionsEnabled()) {
+                    // All new sessions local by default.
+                    si.setLocalSession(true);
+                }
+                break;
+            case OpCode.closeSession:
+                String reqType = "global";
+                if (upgradeableSessionTracker.isLocalSession(si.sessionId)) {
+                    si.setLocalSession(true);
+                    reqType = "local";
+                }
+                LOG.info("Submitting " + reqType + " closeSession request"
+                        + " for session 0x" + Long.toHexString(si.sessionId));
+                break;
+            default:
+                break;
         }
     }
 

@@ -32,7 +32,7 @@ import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 /**
  * A ZooKeeperServer for the Observer node type. Not much is different, but
  * we anticipate specializing the request processors in the future. 
- *
+ * 一个观察节点类型zookeeperserver。没什么不同，但我们预期将来会专门处理请求处理器。
  */
 public class ObserverZooKeeperServer extends LearnerZooKeeperServer {
     private static final Logger LOG =
@@ -42,11 +42,10 @@ public class ObserverZooKeeperServer extends LearnerZooKeeperServer {
      * Enable since request processor for writing txnlog to disk and
      * take periodic snapshot. Default is ON.
      */
-    
     private boolean syncRequestProcessorEnabled = this.self.getSyncEnabled();
     
     /*
-     * Pending sync requests
+     * 等待同步的请求
      */
     ConcurrentLinkedQueue<Request> pendingSyncs = 
         new ConcurrentLinkedQueue<Request>();
@@ -82,8 +81,8 @@ public class ObserverZooKeeperServer extends LearnerZooKeeperServer {
     }
     
     /**
-     * Set up the request processors for an Observer:
-     * firstProcesor->commitProcessor->finalProcessor
+     * 为一个观察者安装请求处理
+     * ObserverRequestProcessor->commitProcessor->finalProcessor
      */
     @Override
     protected void setupRequestProcessors() {      

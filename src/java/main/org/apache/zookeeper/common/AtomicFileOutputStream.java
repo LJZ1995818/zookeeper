@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 /*
  * This code is originally from HDFS, see the similarly named files there
  * in case of bug fixing, history, etc...
+ * 此代码最初是从HDFS
  */
 
 /**

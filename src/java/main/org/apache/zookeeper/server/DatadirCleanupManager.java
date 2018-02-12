@@ -38,7 +38,7 @@ public class DatadirCleanupManager {
     private static final Logger LOG = LoggerFactory.getLogger(DatadirCleanupManager.class);
 
     /**
-     * Status of the dataDir purge task
+     * dataDir清除任务的状态
      */
     public enum PurgeTaskStatus {
         NOT_STARTED, STARTED, COMPLETED;
@@ -57,15 +57,14 @@ public class DatadirCleanupManager {
     private Timer timer;
 
     /**
-     * Constructor of DatadirCleanupManager. It takes the parameters to schedule
-     * the purge task.
-     * 
+     * 构造函数的datadircleanupmanager。它需要参数来安排清除任务。
+     *
      * @param snapDir
      *            snapshot directory
      * @param dataLogDir
      *            transaction log directory
      * @param snapRetainCount
-     *            number of snapshots to be retained after purge
+     *            清除后保留的快照数量。
      * @param purgeInterval
      *            purge interval in hours
      */

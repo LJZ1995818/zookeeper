@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,8 +33,7 @@ import org.apache.zookeeper.server.ZooTrace;
 import org.apache.zookeeper.txn.ErrorTxn;
 
 /**
- * This RequestProcessor forwards any requests that modify the state of the
- * system to the Leader.
+ * This RequestProcessor forwards any requests that modify the state of the system to the Leader.
  */
 public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
         RequestProcessor {
@@ -57,7 +56,7 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
      * @param nextProcessor
      */
     public ObserverRequestProcessor(ObserverZooKeeperServer zks,
-            RequestProcessor nextProcessor) {
+                                    RequestProcessor nextProcessor) {
         super("ObserverRequestProcessor:" + zks.getServerId(), zks
                 .getZooKeeperServerListener());
         this.zks = zks;
@@ -87,30 +86,30 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
                 // of the sync operations this Observer has pending, so we
                 // add it to pendingSyncs.
                 switch (request.type) {
-                case OpCode.sync:
-                    zks.pendingSyncs.add(request);
-                    zks.getObserver().request(request);
-                    break;
-                case OpCode.create:
-                case OpCode.create2:
-                case OpCode.createTTL:
-                case OpCode.createContainer:
-                case OpCode.delete:
-                case OpCode.deleteContainer:
-                case OpCode.setData:
-                case OpCode.reconfig:
-                case OpCode.setACL:
-                case OpCode.multi:
-                case OpCode.check:
-                    zks.getObserver().request(request);
-                    break;
-                case OpCode.createSession:
-                case OpCode.closeSession:
-                    // Don't forward local sessions to the leader.
-                    if (!request.isLocalSession()) {
+                    case OpCode.sync:
+                        zks.pendingSyncs.add(request);
                         zks.getObserver().request(request);
-                    }
-                    break;
+                        break;
+                    case OpCode.create:
+                    case OpCode.create2:
+                    case OpCode.createTTL:
+                    case OpCode.createContainer:
+                    case OpCode.delete:
+                    case OpCode.deleteContainer:
+                    case OpCode.setData:
+                    case OpCode.reconfig:
+                    case OpCode.setACL:
+                    case OpCode.multi:
+                    case OpCode.check:
+                        zks.getObserver().request(request);
+                        break;
+                    case OpCode.createSession:
+                    case OpCode.closeSession:
+                        // Don't forward local sessions to the leader.
+                        if (!request.isLocalSession()) {
+                            zks.getObserver().request(request);
+                        }
+                        break;
                 }
             }
         } catch (Exception e) {
@@ -133,11 +132,11 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
                     request.setTxn(new ErrorTxn(ke.code().intValue()));
                 }
                 request.setException(ke);
-                LOG.info("Error creating upgrade request",  ke);
+                LOG.info("Error creating upgrade request", ke);
             } catch (IOException ie) {
                 LOG.error("Unexpected error in upgrade", ie);
             }
-            if (upgradeRequest != null) {
+            if (upgradeRequest != null) {// 向队列中插入创建会话全局的请求
                 queuedRequests.add(upgradeRequest);
             }
             queuedRequests.add(request);
